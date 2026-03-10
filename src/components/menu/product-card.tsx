@@ -1,4 +1,8 @@
+'use client';
+
 import { Product } from '@/features/products/types';
+import { getOrCreateSessionId } from '@/features/cart/utils/cart-session';
+import { useCart } from '@/hooks/use-cart';
 import { formatCurrency } from '@/lib/utils/currency';
 
 type Props = {
@@ -6,7 +10,33 @@ type Props = {
 };
 
 export function ProductCard({ product }: Props) {
-  const displayPrice = product.display_price ?? product.base_price;
+  const { selectedBranchId, setSelectedBranchId, addItem, sessionId, setSessionId } = useCart();
+
+  const displayPrice = Number(product.display_price ?? product.base_price);
+
+  const handleAdd = () => {
+    const currentSessionId = sessionId ?? getOrCreateSessionId();
+
+    if (currentSessionId && !sessionId) {
+      setSessionId(currentSessionId);
+    }
+
+    const branchId = selectedBranchId ?? 'pending-branch';
+
+    if (!selectedBranchId) {
+      setSelectedBranchId(branchId);
+    }
+
+    addItem({
+      productId: product.id,
+      branchId,
+      quantity: 1,
+      productName: product.name,
+      imageUrl: product.image_url,
+      displayPrice,
+      categoryName: product.category_name,
+    });
+  };
 
   return (
     <article className="rounded-2xl border bg-white p-4 shadow-sm">
@@ -30,7 +60,10 @@ export function ProductCard({ product }: Props) {
 
       <div className="mt-4 flex items-center justify-between">
         <span className="text-lg font-bold">{formatCurrency(displayPrice)}</span>
-        <button className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white">
+        <button
+          onClick={handleAdd}
+          className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white"
+        >
           Agregar
         </button>
       </div>
