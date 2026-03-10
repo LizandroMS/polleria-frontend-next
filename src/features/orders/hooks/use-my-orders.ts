@@ -5,7 +5,7 @@ import { getMyOrders } from '../api/get-my-orders';
 
 export function useMyOrders(token?: string | null) {
   return useQuery({
-    queryKey: ['my-orders', token],
+    queryKey: ['my-orders'],
     queryFn: () => getMyOrders(token as string),
     enabled: !!token,
   });

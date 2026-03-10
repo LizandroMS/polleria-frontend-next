@@ -5,14 +5,20 @@ import { PageHeader } from '@/components/shared/page-header';
 import { WorkerOrderCard } from '@/components/worker/worker-order-card';
 import { useChangeOrderStatus } from '@/features/orders/hooks/use-change-order-status';
 import { useWorkerOrders } from '@/features/orders/hooks/use-worker-orders';
+import { useMyBranches } from '@/features/workers/hooks/use-my-branches';
 import { useAuth } from '@/hooks/use-auth';
+import { useRealtimeWorkerOrders } from '@/hooks/use-realtime-worker-orders';
 import { useState } from 'react';
 
 export default function WorkerOrdersPage() {
   const { token } = useAuth();
   const [statusFilter, setStatusFilter] = useState<string>('');
+
+  const { data: myBranches = [] } = useMyBranches(token);
   const { data = [], isLoading, refetch } = useWorkerOrders(token, statusFilter || undefined);
   const changeStatusMutation = useChangeOrderStatus(token);
+
+  useRealtimeWorkerOrders(myBranches.map((branch: any) => branch.branch_id));
 
   const handleChangeStatus = async (orderId: string, status: string, comment?: string) => {
     await changeStatusMutation.mutateAsync({ orderId, status, comment });

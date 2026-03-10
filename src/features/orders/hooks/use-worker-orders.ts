@@ -5,9 +5,8 @@ import { getWorkerOrders } from '../api/get-worker-orders';
 
 export function useWorkerOrders(token?: string | null, status?: string) {
   return useQuery({
-    queryKey: ['worker-orders', token, status],
+    queryKey: ['worker-orders', status ?? 'all'],
     queryFn: () => getWorkerOrders(token as string, status),
     enabled: !!token,
-    refetchInterval: 15000,
   });
 }

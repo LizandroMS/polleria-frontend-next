@@ -5,7 +5,7 @@ import { getOrderById } from '../api/get-order-by-id';
 
 export function useOrderById(id?: string, token?: string | null) {
   return useQuery({
-    queryKey: ['order-by-id', id, token],
+    queryKey: ['order-by-id', id],
     queryFn: () => getOrderById(id as string, token as string),
     enabled: !!id && !!token,
   });

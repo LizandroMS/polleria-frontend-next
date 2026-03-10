@@ -5,10 +5,13 @@ import { PageHeader } from '@/components/shared/page-header';
 import { OrderCard } from '@/components/orders/order-card';
 import { useMyOrders } from '@/features/orders/hooks/use-my-orders';
 import { useAuth } from '@/hooks/use-auth';
+import { useRealtimeMyOrders } from '@/hooks/use-realtime-my-orders';
 
 export default function MyOrdersPage() {
   const { token } = useAuth();
   const { data = [], isLoading } = useMyOrders(token);
+
+  useRealtimeMyOrders();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
