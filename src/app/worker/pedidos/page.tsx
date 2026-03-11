@@ -9,6 +9,7 @@ import { useMyBranches } from '@/features/workers/hooks/use-my-branches';
 import { useAuth } from '@/hooks/use-auth';
 import { useRealtimeWorkerOrders } from '@/hooks/use-realtime-worker-orders';
 import { useState } from 'react';
+import { RequireWorker } from '@/components/auth/require-worker';
 
 export default function WorkerOrdersPage() {
   const { token } = useAuth();
@@ -26,6 +27,7 @@ export default function WorkerOrdersPage() {
   };
 
   return (
+  <RequireWorker>
     <div className="mx-auto max-w-7xl px-4 py-8">
       <PageHeader
         title="Pedidos operativos"
@@ -65,5 +67,6 @@ export default function WorkerOrdersPage() {
         </div>
       )}
     </div>
-  );
+  </RequireWorker>
+);
 }

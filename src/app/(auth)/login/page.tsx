@@ -62,6 +62,12 @@ export default function LoginPage() {
           >
             {loginMutation.isPending ? 'Ingresando...' : 'Ingresar'}
           </button>
+          <p className="mt-4 text-center text-sm text-gray-600">
+            ¿No tienes cuenta?{' '}
+            <a href="/registro" className="font-medium text-black underline">
+              Regístrate
+            </a>
+          </p>
         </div>
       </form>
     </div>

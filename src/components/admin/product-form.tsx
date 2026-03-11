@@ -1,5 +1,6 @@
 'use client';
 
+import { ImageUploadField } from '@/components/admin/image-upload-field';
 import { useState } from 'react';
 
 type Props = {
@@ -12,6 +13,7 @@ export function ProductForm({ categories, onSubmit }: Props) {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [basePrice, setBasePrice] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   return (
     <form
@@ -23,11 +25,13 @@ export function ProductForm({ categories, onSubmit }: Props) {
           name,
           slug,
           basePrice: Number(basePrice),
+          imageUrl: imageUrl || undefined,
         });
         setCategoryId('');
         setName('');
         setSlug('');
         setBasePrice('');
+        setImageUrl('');
       }}
     >
       <h3 className="text-lg font-semibold">Nuevo producto</h3>
@@ -42,6 +46,18 @@ export function ProductForm({ categories, onSubmit }: Props) {
       <input className="rounded-xl border px-4 py-3" placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} required />
       <input className="rounded-xl border px-4 py-3" placeholder="Slug" value={slug} onChange={(e) => setSlug(e.target.value)} required />
       <input className="rounded-xl border px-4 py-3" placeholder="Precio base" type="number" step="0.01" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} required />
+
+      <ImageUploadField
+        bucket="product-images"
+        folder="products"
+        label="Imagen del producto"
+        onUploaded={setImageUrl}
+      />
+
+      {imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imageUrl} alt="preview" className="h-32 w-32 rounded-xl object-cover" />
+      ) : null}
 
       <button className="rounded-xl bg-black px-4 py-3 text-white">Guardar</button>
     </form>

@@ -14,6 +14,9 @@ export type CheckoutCustomerData = {
   lastName?: string;
   phone: string;
   email?: string;
+  documentNumber?:string;
+  businessName?: string;
+  addressText?: string;
 };
 
 export type CartState = {

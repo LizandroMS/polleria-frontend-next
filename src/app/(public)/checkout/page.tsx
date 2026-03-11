@@ -5,11 +5,12 @@ import { CheckoutAuthRequired } from '@/components/checkout/checkout-auth-requir
 import { CheckoutCustomerForm } from '@/components/checkout/checkout-customer-form';
 import { EmptyState } from '@/components/shared/empty-state';
 import { PageHeader } from '@/components/shared/page-header';
+import { useMyAddresses } from '@/features/customer-addresses/hooks/use-my-addresses';
 import { useCreateOrder } from '@/features/orders/hooks/use-create-order';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,10 +27,26 @@ export default function CheckoutPage() {
     clearCart,
   } = useCart();
 
+  const { data: addresses = [] } = useMyAddresses(token);
+
   const [orderType, setOrderType] = useState<'DELIVERY' | 'PICKUP' | 'DINE_IN'>('DELIVERY');
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'YAPE' | 'PLIN' | 'CARD'>('CASH');
   const [invoiceType, setInvoiceType] = useState<'NONE' | 'BOLETA_SIMPLE' | 'FACTURA'>('NONE');
   const [notes, setNotes] = useState('');
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+
+  const selectedAddress = useMemo(
+    () => addresses.find((address: any) => address.id === selectedAddressId),
+    [addresses, selectedAddressId],
+  );
+
+  const canSubmit =
+    !!user &&
+    !!token &&
+    !!selectedBranchId &&
+    !!checkoutCustomer &&
+    !items.some((item) => item.branchId === 'pending-branch') &&
+    (orderType !== 'DELIVERY' || !!selectedAddressId || !!checkoutCustomer?.addressText);
 
   if (!items.length) {
     return (
@@ -42,21 +59,20 @@ export default function CheckoutPage() {
     );
   }
 
-  const canSubmit =
-    !!user &&
-    !!token &&
-    !!selectedBranchId &&
-    !!checkoutCustomer &&
-    !items.some((item) => item.branchId === 'pending-branch');
-
   const handleCreateOrder = async () => {
     if (!canSubmit || !checkoutCustomer || !selectedBranchId) return;
+
+    const addressText =
+      orderType === 'DELIVERY'
+        ? selectedAddress?.address_line || checkoutCustomer.addressText || undefined
+        : undefined;
 
     const data = await createOrderMutation.mutateAsync({
       branchId: selectedBranchId,
       orderType,
       paymentMethod,
       invoiceType,
+      addressId: selectedAddressId || undefined,
       notes,
       deliveryFee: orderType === 'DELIVERY' ? 0 : 0,
       customer: {
@@ -64,7 +80,15 @@ export default function CheckoutPage() {
         lastName: checkoutCustomer.lastName,
         phone: checkoutCustomer.phone,
         email: checkoutCustomer.email,
-        addressText: orderType === 'DELIVERY' ? 'Dirección pendiente de Sprint 6/7' : undefined,
+        documentType:
+          invoiceType === 'BOLETA_SIMPLE'
+            ? '1'
+            : invoiceType === 'FACTURA'
+              ? '6'
+              : undefined,
+        documentNumber: checkoutCustomer.documentNumber,
+        businessName: checkoutCustomer.businessName,
+        addressText,
       },
       items: items.map((item) => ({
         productId: item.productId,
@@ -96,10 +120,37 @@ export default function CheckoutPage() {
             <CheckoutCustomerForm
               initialData={checkoutCustomer}
               onSubmit={setCheckoutCustomer}
+              invoiceType={invoiceType}
             />
           )}
 
           {!loading && !user ? <CheckoutAuthRequired /> : null}
+
+          {orderType === 'DELIVERY' && user ? (
+            <div className="rounded-2xl border bg-white p-5 space-y-3">
+              <h3 className="text-lg font-semibold">Dirección de entrega</h3>
+
+              {addresses.length ? (
+                <select
+                  className="w-full rounded-xl border px-4 py-3"
+                  value={selectedAddressId}
+                  onChange={(e) => setSelectedAddressId(e.target.value)}
+                >
+                  <option value="">Selecciona una dirección guardada</option>
+                  {addresses.map((address: any) => (
+                    <option key={address.id} value={address.id}>
+                      {address.label || 'Dirección'} - {address.address_line}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <p className="text-sm text-gray-600">
+                  No tienes direcciones guardadas. Puedes registrar una en tu perfil o usar la
+                  dirección escrita en tus datos del cliente.
+                </p>
+              )}
+            </div>
+          ) : null}
 
           <div className="rounded-2xl border bg-white p-5 space-y-4">
             <h3 className="text-lg font-semibold">Configuración del pedido</h3>
@@ -107,7 +158,14 @@ export default function CheckoutPage() {
             <select
               className="w-full rounded-xl border px-4 py-3"
               value={orderType}
-              onChange={(e) => setOrderType(e.target.value as any)}
+              onChange={(e) => {
+                const nextValue = e.target.value as 'DELIVERY' | 'PICKUP' | 'DINE_IN';
+                setOrderType(nextValue);
+
+                if (nextValue !== 'DELIVERY') {
+                  setSelectedAddressId('');
+                }
+              }}
             >
               <option value="DELIVERY">Delivery</option>
               <option value="PICKUP">Recojo</option>
@@ -117,7 +175,7 @@ export default function CheckoutPage() {
             <select
               className="w-full rounded-xl border px-4 py-3"
               value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as any)}
+              onChange={(e) => setPaymentMethod(e.target.value as 'CASH' | 'YAPE' | 'PLIN' | 'CARD')}
             >
               <option value="CASH">Efectivo</option>
               <option value="YAPE">Yape</option>
@@ -128,7 +186,9 @@ export default function CheckoutPage() {
             <select
               className="w-full rounded-xl border px-4 py-3"
               value={invoiceType}
-              onChange={(e) => setInvoiceType(e.target.value as any)}
+              onChange={(e) =>
+                setInvoiceType(e.target.value as 'NONE' | 'BOLETA_SIMPLE' | 'FACTURA')
+              }
             >
               <option value="NONE">Sin comprobante</option>
               <option value="BOLETA_SIMPLE">Boleta simple</option>

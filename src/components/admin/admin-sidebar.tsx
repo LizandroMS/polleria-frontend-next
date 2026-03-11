@@ -9,6 +9,7 @@ const links = [
   { href: '/admin/carrusel', label: 'Carrusel' },
   { href: '/admin/sucursales', label: 'Sucursales' },
   { href: '/admin/trabajadores', label: 'Trabajadores' },
+  { href: '/admin/comprobantes', label: 'Comprobantes' },
 ];
 
 export function AdminSidebar() {
