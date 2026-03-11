@@ -59,8 +59,8 @@ export default function AdminWorkersPage() {
       <WorkerForm
         workers={workers}
         branches={branches}
-        onCreateWorker={async (payload) => createWorkerMutation.mutateAsync(payload)}
-        onAssign={async (payload) => assignMutation.mutateAsync(payload)}
+        onCreateWorker={async (payload) => { await createWorkerMutation.mutateAsync(payload); }}
+        onAssign={async (payload) => { await assignMutation.mutateAsync(payload); }}
       />
 
       <SimpleAdminTable

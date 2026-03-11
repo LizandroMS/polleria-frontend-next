@@ -39,7 +39,7 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <ProductForm
         categories={categories}
-        onSubmit={async (payload) => createMutation.mutateAsync(payload)}
+        onSubmit={async (payload) => { await createMutation.mutateAsync(payload); }}
       />
 
       <SimpleAdminTable

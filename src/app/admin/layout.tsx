@@ -9,9 +9,16 @@ export default function AdminLayout({
 }>) {
   return (
     <RequireAdmin>
-      <div className="min-h-screen bg-gray-50">
+      <div
+        className="min-h-screen"
+        style={{
+          background:
+            'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 40%, #fffaf5 100%)',
+        }}
+      >
         <AdminHeader />
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[260px_1fr]">
+
+        <div className="app-container grid gap-6 py-6 lg:grid-cols-[280px_1fr]">
           <AdminSidebar />
           <main>{children}</main>
         </div>

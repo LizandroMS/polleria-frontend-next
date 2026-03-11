@@ -30,7 +30,7 @@ export default function AdminPromotionsPage() {
 
   return (
     <div className="space-y-6">
-      <PromotionForm onSubmit={async (payload) => createMutation.mutateAsync(payload)} />
+      <PromotionForm onSubmit={async (payload) => { await createMutation.mutateAsync(payload); }} />
 
       <SimpleAdminTable
         rows={data}

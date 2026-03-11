@@ -8,7 +8,7 @@ export function FeaturedProducts() {
   const { data, isLoading } = usePublicProducts();
 
   if (isLoading) {
-    return <div>Cargando productos...</div>;
+    return <div className="py-6 text-sm" style={{ color: 'var(--text-soft)' }}>Cargando productos...</div>;
   }
 
   const featured = (data ?? []).filter((product) => product.is_featured);
@@ -19,8 +19,12 @@ export function FeaturedProducts() {
 
   return (
     <section>
-      <h2 className="mb-4 text-2xl font-bold">Productos destacados</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-7">
+        <p className="section-subtitle">Recomendados</p>
+        <h2 className="section-title mt-2">Nuestros favoritos</h2>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {featured.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

@@ -7,7 +7,7 @@ export function FeaturedPromotions() {
   const { data, isLoading } = usePublicPromotions();
 
   if (isLoading) {
-    return <div>Cargando promociones...</div>;
+    return <div className="py-6 text-sm" style={{ color: 'var(--text-soft)' }}>Cargando promociones...</div>;
   }
 
   if (!data?.length) {
@@ -16,17 +16,45 @@ export function FeaturedPromotions() {
 
   return (
     <section>
-      <h2 className="mb-4 text-2xl font-bold">Promociones</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-7">
+        <p className="section-subtitle">Ofertas</p>
+        <h2 className="section-title mt-2">Promociones destacadas</h2>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {data.map((promotion) => (
-          <article key={promotion.id} className="rounded-2xl border bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold">{promotion.title}</h3>
+          <article
+            key={promotion.id}
+            className="soft-card group p-6 transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-4 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+              style={{ background: '#f9e8db', color: 'var(--primary)' }}
+            >
+              Promo activa
+            </div>
+
+            <h3 className="text-xl font-bold" style={{ color: 'var(--dark)' }}>
+              {promotion.title}
+            </h3>
+
             {promotion.description ? (
-              <p className="mt-2 text-sm text-gray-600">{promotion.description}</p>
+              <p className="mt-3 text-sm leading-7" style={{ color: 'var(--text-soft)' }}>
+                {promotion.description}
+              </p>
             ) : null}
-            <p className="mt-3 text-sm font-medium">
-              Tipo: {promotion.discount_type} / Valor: {promotion.discount_value}
-            </p>
+
+            <div className="mt-5 flex items-center justify-between">
+              <span
+                className="rounded-full px-3 py-2 text-xs font-semibold text-white"
+                style={{ background: 'var(--primary)' }}
+              >
+                {promotion.discount_type}
+              </span>
+
+              <span className="text-lg font-extrabold" style={{ color: 'var(--dark)' }}>
+                {promotion.discount_value}
+              </span>
+            </div>
           </article>
         ))}
       </div>

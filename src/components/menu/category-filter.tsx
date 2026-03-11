@@ -10,12 +10,15 @@ type Props = {
 
 export function CategoryFilter({ categories, selectedSlug, onChange }: Props) {
   return (
-    <div className="mb-6 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-3">
       <button
         onClick={() => onChange(undefined)}
-        className={`rounded-full px-4 py-2 text-sm ${
-          !selectedSlug ? 'bg-black text-white' : 'bg-white border'
-        }`}
+        className="rounded-full px-5 py-2.5 text-sm font-semibold transition"
+        style={
+          !selectedSlug
+            ? { background: 'var(--primary)', color: 'white' }
+            : { background: 'white', color: 'var(--text-main)', border: '1px solid var(--border-soft)' }
+        }
       >
         Todas
       </button>
@@ -24,9 +27,12 @@ export function CategoryFilter({ categories, selectedSlug, onChange }: Props) {
         <button
           key={category.id}
           onClick={() => onChange(category.slug)}
-          className={`rounded-full px-4 py-2 text-sm ${
-            selectedSlug === category.slug ? 'bg-black text-white' : 'bg-white border'
-          }`}
+          className="rounded-full px-5 py-2.5 text-sm font-semibold transition"
+          style={
+            selectedSlug === category.slug
+              ? { background: 'var(--primary)', color: 'white' }
+              : { background: 'white', color: 'var(--text-main)', border: '1px solid var(--border-soft)' }
+          }
         >
           {category.name}
         </button>

@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fffaf5;
+  --surface: #ffffff;
+  --surface-warm: #f7ede3;
+  --primary: #c96a3d;
+  --primary-hover: #b75b30;
+  --accent: #e8b86d;
+  --text-main: #1f2937;
+  --text-soft: #6b7280;
+  --border-soft: #eadfd2;
+  --dark: #111827;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-main);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+@layer components {
+  .app-container {
+    @apply mx-auto max-w-7xl px-4;
+  }
+
+  .section-title {
+    @apply text-3xl font-extrabold tracking-tight;
+    color: var(--text-main);
+  }
+
+  .section-subtitle {
+    @apply text-sm font-semibold uppercase tracking-[0.18em];
+    color: var(--primary);
+  }
+
+  .soft-card {
+    @apply rounded-[28px] border shadow-sm;
+    background: var(--surface);
+    border-color: var(--border-soft);
+  }
+
+  .warm-card {
+    @apply rounded-[28px] border shadow-sm;
+    background: var(--surface-warm);
+    border-color: var(--border-soft);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition;
+    background: var(--primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition;
+    background: white;
+    border-color: var(--border-soft);
+    color: var(--text-main);
+  }
+
+  .btn-secondary:hover {
+    background: #fcf7f1;
+  }
+
+  .chip-soft {
+    @apply inline-flex rounded-full px-4 py-2 text-sm font-medium;
+    background: #f9e8db;
+    color: var(--primary);
+  }
+
+  .input-soft {
+    @apply w-full rounded-2xl border px-4 py-3 outline-none transition;
+    border-color: var(--border-soft);
+    background: white;
+    color: var(--text-main);
+  }
+
+  .input-soft:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(201, 106, 61, 0.12);
+  }
 }

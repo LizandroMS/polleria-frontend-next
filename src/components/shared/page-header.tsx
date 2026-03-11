@@ -5,9 +5,15 @@ type Props = {
 
 export function PageHeader({ title, description }: Props) {
   return (
-    <div className="mb-8">
-      <h1 className="text-3xl font-bold">{title}</h1>
-      {description ? <p className="mt-2 text-gray-600">{description}</p> : null}
+    <div>
+      <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: 'var(--dark)' }}>
+        {title}
+      </h1>
+      {description ? (
+        <p className="mt-3 max-w-2xl text-base leading-7" style={{ color: 'var(--text-soft)' }}>
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

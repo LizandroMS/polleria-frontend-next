@@ -30,7 +30,7 @@ export default function AdminBranchesPage() {
 
   return (
     <div className="space-y-6">
-      <BranchForm onSubmit={async (payload) => createMutation.mutateAsync(payload)} />
+      <BranchForm onSubmit={async (payload) => { await createMutation.mutateAsync(payload); }} />
 
       <SimpleAdminTable
         rows={data}
