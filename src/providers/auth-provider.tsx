@@ -28,18 +28,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const bootstrap = async () => {
-      const savedToken = localStorage.getItem(TOKEN_KEY);
-
-      if (!savedToken) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const profile = await getMe(savedToken);
+        const savedToken = localStorage.getItem(TOKEN_KEY);
+
+        if (!savedToken) {
+          setLoading(false);
+          return;
+        }
+
         setToken(savedToken);
+
+        const profile = await getMe(savedToken);
         setUser(profile);
-      } catch {
+      } catch (error) {
+        console.error('Error rehidratando sesión:', error);
         localStorage.removeItem(TOKEN_KEY);
         setToken(null);
         setUser(null);
@@ -62,8 +64,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       try {
         await mergeCart(sessionId, newToken);
         clearCart();
-      } catch {
-        // dejamos el carrito local como respaldo si el merge falla
+      } catch (error) {
+        console.error('Error fusionando carrito:', error);
       }
     }
   };

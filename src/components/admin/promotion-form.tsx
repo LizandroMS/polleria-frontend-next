@@ -10,35 +10,87 @@ export function PromotionForm({ onSubmit }: Props) {
   const [title, setTitle] = useState('');
   const [discountType, setDiscountType] = useState('PERCENTAGE');
   const [discountValue, setDiscountValue] = useState('');
+  const [description, setDescription] = useState('');
 
   return (
     <form
-      className="grid gap-3 rounded-2xl border bg-white p-5"
+      className="soft-card space-y-5 p-6 md:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
         await onSubmit({
           title,
           discountType,
           discountValue: Number(discountValue),
+          description: description || undefined,
         });
         setTitle('');
         setDiscountType('PERCENTAGE');
         setDiscountValue('');
+        setDescription('');
       }}
     >
-      <h3 className="text-lg font-semibold">Nueva promoción</h3>
+      <div>
+        <p className="section-subtitle">Promociones</p>
+        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+          Nueva promoción
+        </h3>
+        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+          Define campañas comerciales, descuentos o precios especiales.
+        </p>
+      </div>
 
-      <input className="rounded-xl border px-4 py-3" placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} required />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">Título</label>
+          <input
+            className="input-soft"
+            placeholder="Ej. Combo familiar"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-      <select className="rounded-xl border px-4 py-3" value={discountType} onChange={(e) => setDiscountType(e.target.value)}>
-        <option value="PERCENTAGE">PERCENTAGE</option>
-        <option value="FIXED">FIXED</option>
-        <option value="SPECIAL_PRICE">SPECIAL_PRICE</option>
-      </select>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Tipo de descuento</label>
+          <select
+            className="input-soft"
+            value={discountType}
+            onChange={(e) => setDiscountType(e.target.value)}
+          >
+            <option value="PERCENTAGE">PERCENTAGE</option>
+            <option value="FIXED">FIXED</option>
+            <option value="SPECIAL_PRICE">SPECIAL_PRICE</option>
+          </select>
+        </div>
 
-      <input className="rounded-xl border px-4 py-3" placeholder="Valor descuento" type="number" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(e.target.value)} required />
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Valor</label>
+          <input
+            className="input-soft"
+            placeholder="0.00"
+            type="number"
+            step="0.01"
+            value={discountValue}
+            onChange={(e) => setDiscountValue(e.target.value)}
+            required
+          />
+        </div>
 
-      <button className="rounded-xl bg-black px-4 py-3 text-white">Guardar</button>
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">Descripción</label>
+          <textarea
+            className="input-soft min-h-[120px]"
+            placeholder="Describe la promoción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <button className="btn-primary">Guardar promoción</button>
+      </div>
     </form>
   );
 }

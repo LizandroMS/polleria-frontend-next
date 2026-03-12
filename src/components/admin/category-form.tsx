@@ -9,23 +9,70 @@ type Props = {
 export function CategoryForm({ onSubmit }: Props) {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [description, setDescription] = useState('');
 
   return (
     <form
-      className="grid gap-3 rounded-2xl border bg-white p-5"
+      className="soft-card space-y-5 p-6 md:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
-        await onSubmit({ name, slug });
+        await onSubmit({
+          name,
+          slug,
+          description: description || undefined,
+        });
         setName('');
         setSlug('');
+        setDescription('');
       }}
     >
-      <h3 className="text-lg font-semibold">Nueva categoría</h3>
+      <div>
+        <p className="section-subtitle">Categorías</p>
+        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+          Nueva categoría
+        </h3>
+        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+          Organiza mejor tu carta agrupando productos por secciones.
+        </p>
+      </div>
 
-      <input className="rounded-xl border px-4 py-3" placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} required />
-      <input className="rounded-xl border px-4 py-3" placeholder="Slug" value={slug} onChange={(e) => setSlug(e.target.value)} required />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Nombre</label>
+          <input
+            className="input-soft"
+            placeholder="Ej. Pollos"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
 
-      <button className="rounded-xl bg-black px-4 py-3 text-white">Guardar</button>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Slug</label>
+          <input
+            className="input-soft"
+            placeholder="ej. pollos"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">Descripción</label>
+          <textarea
+            className="input-soft min-h-[120px]"
+            placeholder="Descripción opcional de la categoría"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <button className="btn-primary">Guardar categoría</button>
+      </div>
     </form>
   );
 }

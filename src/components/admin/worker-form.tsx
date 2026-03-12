@@ -11,39 +11,108 @@ type Props = {
 
 export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Props) {
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const [workerId, setWorkerId] = useState('');
   const [branchId, setBranchId] = useState('');
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 xl:grid-cols-2">
       <form
-        className="grid gap-3 rounded-2xl border bg-white p-5"
+        className="soft-card space-y-5 p-6 md:p-7"
         onSubmit={async (e) => {
           e.preventDefault();
           await onCreateWorker({
             firstName,
+            lastName,
             email,
+            phone,
             password,
           });
           setFirstName('');
+          setLastName('');
           setEmail('');
+          setPhone('');
           setPassword('');
         }}
       >
-        <h3 className="text-lg font-semibold">Nuevo trabajador</h3>
+        <div>
+          <p className="section-subtitle">Trabajadores</p>
+          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+            Nuevo trabajador
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+            Registra personal operativo para atención y gestión de pedidos.
+          </p>
+        </div>
 
-        <input className="rounded-xl border px-4 py-3" placeholder="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-        <input className="rounded-xl border px-4 py-3" placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="rounded-xl border px-4 py-3" placeholder="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Nombres</label>
+            <input
+              className="input-soft"
+              placeholder="Nombres"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
 
-        <button className="rounded-xl bg-black px-4 py-3 text-white">Crear trabajador</button>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Apellidos</label>
+            <input
+              className="input-soft"
+              placeholder="Apellidos"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-sm font-semibold">Correo</label>
+            <input
+              className="input-soft"
+              placeholder="correo@empresa.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              type="email"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Teléfono</label>
+            <input
+              className="input-soft"
+              placeholder="987654321"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Contraseña</label>
+            <input
+              className="input-soft"
+              placeholder="********"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button className="btn-primary">Crear trabajador</button>
+        </div>
       </form>
 
       <form
-        className="grid gap-3 rounded-2xl border bg-white p-5"
+        className="soft-card space-y-5 p-6 md:p-7"
         onSubmit={async (e) => {
           e.preventDefault();
           await onAssign({ userId: workerId, branchId });
@@ -51,27 +120,55 @@ export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Prop
           setBranchId('');
         }}
       >
-        <h3 className="text-lg font-semibold">Asignar sucursal</h3>
+        <div>
+          <p className="section-subtitle">Asignaciones</p>
+          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+            Asignar sucursal
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+            Relaciona trabajadores con la sucursal donde operarán.
+          </p>
+        </div>
 
-        <select className="rounded-xl border px-4 py-3" value={workerId} onChange={(e) => setWorkerId(e.target.value)} required>
-          <option value="">Selecciona trabajador</option>
-          {workers.map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.first_name} {w.last_name ?? ''} - {w.email}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Trabajador</label>
+            <select
+              className="input-soft"
+              value={workerId}
+              onChange={(e) => setWorkerId(e.target.value)}
+              required
+            >
+              <option value="">Selecciona trabajador</option>
+              {workers.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.first_name} {w.last_name ?? ''} - {w.email}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <select className="rounded-xl border px-4 py-3" value={branchId} onChange={(e) => setBranchId(e.target.value)} required>
-          <option value="">Selecciona sucursal</option>
-          {branches.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.name}
-            </option>
-          ))}
-        </select>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Sucursal</label>
+            <select
+              className="input-soft"
+              value={branchId}
+              onChange={(e) => setBranchId(e.target.value)}
+              required
+            >
+              <option value="">Selecciona sucursal</option>
+              {branches.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-        <button className="rounded-xl bg-black px-4 py-3 text-white">Asignar</button>
+        <div className="flex justify-end">
+          <button className="btn-primary">Asignar sucursal</button>
+        </div>
       </form>
     </div>
   );
