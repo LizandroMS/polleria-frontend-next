@@ -7,4 +7,5 @@ export type Promotion = {
   starts_at: string | null;
   ends_at: string | null;
   is_active: boolean;
+  image_url: string | null;
 };

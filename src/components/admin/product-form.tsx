@@ -1,14 +1,21 @@
 'use client';
 
 import { ImageUploadField } from '@/components/admin/image-upload-field';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   categories: any[];
+  initialData?: any | null;
   onSubmit: (payload: any) => Promise<void>;
+  onCancelEdit?: () => void;
 };
 
-export function ProductForm({ categories, onSubmit }: Props) {
+export function ProductForm({
+  categories,
+  initialData,
+  onSubmit,
+  onCancelEdit,
+}: Props) {
   const [categoryId, setCategoryId] = useState('');
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -17,11 +24,45 @@ export function ProductForm({ categories, onSubmit }: Props) {
   const [imageUrl, setImageUrl] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
 
+  const isEditing = !!initialData;
+
+  useEffect(() => {
+    if (!initialData) {
+      setCategoryId('');
+      setName('');
+      setSlug('');
+      setBasePrice('');
+      setDescription('');
+      setImageUrl('');
+      setIsFeatured(false);
+      return;
+    }
+
+    setCategoryId(initialData.category_id ?? '');
+    setName(initialData.name ?? '');
+    setSlug(initialData.slug ?? '');
+    setBasePrice(initialData.base_price?.toString() ?? '');
+    setDescription(initialData.description ?? '');
+    setImageUrl(initialData.image_url ?? '');
+    setIsFeatured(!!initialData.is_featured);
+  }, [initialData]);
+
+  const resetForm = () => {
+    setCategoryId('');
+    setName('');
+    setSlug('');
+    setBasePrice('');
+    setDescription('');
+    setImageUrl('');
+    setIsFeatured(false);
+  };
+
   return (
     <form
       className="soft-card space-y-6 p-6 md:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
+
         await onSubmit({
           categoryId,
           name,
@@ -31,23 +72,37 @@ export function ProductForm({ categories, onSubmit }: Props) {
           imageUrl: imageUrl || undefined,
           isFeatured,
         });
-        setCategoryId('');
-        setName('');
-        setSlug('');
-        setBasePrice('');
-        setDescription('');
-        setImageUrl('');
-        setIsFeatured(false);
+
+        if (!isEditing) {
+          resetForm();
+        }
       }}
     >
-      <div>
-        <p className="section-subtitle">Productos</p>
-        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
-          Nuevo producto
-        </h3>
-        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
-          Agrega productos que luego aparecerán en la carta y promociones.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="section-subtitle">Productos</p>
+          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+            {isEditing ? 'Editar producto' : 'Nuevo producto'}
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+            {isEditing
+              ? 'Actualiza la información del producto seleccionado.'
+              : 'Agrega productos que luego aparecerán en la carta y promociones.'}
+          </p>
+        </div>
+
+        {isEditing ? (
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              resetForm();
+              onCancelEdit?.();
+            }}
+          >
+            Cancelar
+          </button>
+        ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -123,7 +178,8 @@ export function ProductForm({ categories, onSubmit }: Props) {
             onUploaded={setImageUrl}
           />
 
-          <label className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-sm"
+          <label
+            className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-sm"
             style={{ borderColor: 'var(--border-soft)' }}
           >
             <input
@@ -135,9 +191,7 @@ export function ProductForm({ categories, onSubmit }: Props) {
           </label>
         </div>
 
-        <div
-          className="warm-card flex min-h-[220px] items-center justify-center p-4"
-        >
+        <div className="warm-card flex min-h-[220px] items-center justify-center p-4">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -146,7 +200,7 @@ export function ProductForm({ categories, onSubmit }: Props) {
               className="h-full max-h-[200px] w-full rounded-2xl object-cover"
             />
           ) : (
-            <p className="text-sm text-center" style={{ color: 'var(--text-soft)' }}>
+            <p className="text-center text-sm" style={{ color: 'var(--text-soft)' }}>
               Aquí verás la vista previa de la imagen
             </p>
           )}
@@ -154,7 +208,9 @@ export function ProductForm({ categories, onSubmit }: Props) {
       </div>
 
       <div className="flex justify-end">
-        <button className="btn-primary">Guardar producto</button>
+        <button className="btn-primary">
+          {isEditing ? 'Actualizar producto' : 'Guardar producto'}
+        </button>
       </div>
     </form>
   );

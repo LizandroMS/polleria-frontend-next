@@ -1,23 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   onSubmit: (payload: any) => Promise<void>;
+  initialData?: any | null;
+  onCancelEdit?: () => void;
 };
 
-export function BranchForm({ onSubmit }: Props) {
+export function BranchForm({
+  onSubmit,
+  initialData,
+  onCancelEdit,
+}: Props) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [district, setDistrict] = useState('');
   const [phone, setPhone] = useState('');
   const [reference, setReference] = useState('');
 
+  const isEditing = !!initialData;
+
+  useEffect(() => {
+    if (!initialData) {
+      setName('');
+      setAddress('');
+      setDistrict('');
+      setPhone('');
+      setReference('');
+      return;
+    }
+
+    setName(initialData.name ?? '');
+    setAddress(initialData.address ?? '');
+    setDistrict(initialData.district ?? '');
+    setPhone(initialData.phone ?? '');
+    setReference(initialData.reference ?? '');
+  }, [initialData]);
+
+  const resetForm = () => {
+    setName('');
+    setAddress('');
+    setDistrict('');
+    setPhone('');
+    setReference('');
+  };
+
   return (
     <form
       className="soft-card space-y-5 p-6 md:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
+
         await onSubmit({
           name,
           address,
@@ -25,21 +59,37 @@ export function BranchForm({ onSubmit }: Props) {
           phone,
           reference,
         });
-        setName('');
-        setAddress('');
-        setDistrict('');
-        setPhone('');
-        setReference('');
+
+        if (!isEditing) {
+          resetForm();
+        }
       }}
     >
-      <div>
-        <p className="section-subtitle">Sucursales</p>
-        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
-          Nueva sucursal
-        </h3>
-        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
-          Registra una nueva sede con su información básica.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="section-subtitle">Sucursales</p>
+          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+            {isEditing ? 'Editar sucursal' : 'Nueva sucursal'}
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+            {isEditing
+              ? 'Actualiza los datos de la sucursal seleccionada.'
+              : 'Registra una nueva sede con su información básica.'}
+          </p>
+        </div>
+
+        {isEditing ? (
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              resetForm();
+              onCancelEdit?.();
+            }}
+          >
+            Cancelar
+          </button>
+        ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -97,7 +147,9 @@ export function BranchForm({ onSubmit }: Props) {
       </div>
 
       <div className="flex justify-end">
-        <button className="btn-primary">Guardar sucursal</button>
+        <button className="btn-primary">
+          {isEditing ? 'Actualizar sucursal' : 'Guardar sucursal'}
+        </button>
       </div>
     </form>
   );

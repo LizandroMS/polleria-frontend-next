@@ -1,39 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   onSubmit: (payload: any) => Promise<void>;
+  initialData?: any | null;
+  onCancelEdit?: () => void;
 };
 
-export function CategoryForm({ onSubmit }: Props) {
+export function CategoryForm({
+  onSubmit,
+  initialData,
+  onCancelEdit,
+}: Props) {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
+
+  const isEditing = !!initialData;
+
+  useEffect(() => {
+    if (!initialData) {
+      setName('');
+      setSlug('');
+      setDescription('');
+      return;
+    }
+
+    setName(initialData.name ?? '');
+    setSlug(initialData.slug ?? '');
+    setDescription(initialData.description ?? '');
+  }, [initialData]);
+
+  const resetForm = () => {
+    setName('');
+    setSlug('');
+    setDescription('');
+  };
 
   return (
     <form
       className="soft-card space-y-5 p-6 md:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
+
         await onSubmit({
           name,
           slug,
           description: description || undefined,
         });
-        setName('');
-        setSlug('');
-        setDescription('');
+
+        if (!isEditing) {
+          resetForm();
+        }
       }}
     >
-      <div>
-        <p className="section-subtitle">Categorías</p>
-        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
-          Nueva categoría
-        </h3>
-        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
-          Organiza mejor tu carta agrupando productos por secciones.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="section-subtitle">Categorías</p>
+          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+            {isEditing ? 'Editar categoría' : 'Nueva categoría'}
+          </h3>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+            {isEditing
+              ? 'Actualiza la categoría seleccionada.'
+              : 'Organiza mejor tu carta agrupando productos por secciones.'}
+          </p>
+        </div>
+
+        {isEditing ? (
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              resetForm();
+              onCancelEdit?.();
+            }}
+          >
+            Cancelar
+          </button>
+        ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -71,7 +117,9 @@ export function CategoryForm({ onSubmit }: Props) {
       </div>
 
       <div className="flex justify-end">
-        <button className="btn-primary">Guardar categoría</button>
+        <button className="btn-primary">
+          {isEditing ? 'Actualizar categoría' : 'Guardar categoría'}
+        </button>
       </div>
     </form>
   );
