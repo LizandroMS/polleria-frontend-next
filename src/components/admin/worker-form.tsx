@@ -1,15 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   workers: any[];
   branches: any[];
+  initialData?: any | null;
   onCreateWorker: (payload: any) => Promise<void>;
+  onUpdateWorker?: (payload: any) => Promise<void>;
   onAssign: (payload: any) => Promise<void>;
+  onCancelEdit?: () => void;
 };
 
-export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Props) {
+export function WorkerForm({
+  workers,
+  branches,
+  initialData,
+  onCreateWorker,
+  onUpdateWorker,
+  onAssign,
+  onCancelEdit,
+}: Props) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,12 +30,51 @@ export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Prop
   const [workerId, setWorkerId] = useState('');
   const [branchId, setBranchId] = useState('');
 
+  const isEditing = !!initialData;
+
+  useEffect(() => {
+    if (!initialData) {
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setPhone('');
+      setPassword('');
+      return;
+    }
+
+    setFirstName(initialData.first_name ?? '');
+    setLastName(initialData.last_name ?? '');
+    setEmail(initialData.email ?? '');
+    setPhone(initialData.phone ?? '');
+    setPassword('');
+  }, [initialData]);
+
+  const resetWorkerForm = () => {
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setPhone('');
+    setPassword('');
+  };
+
   return (
     <div className="grid gap-6 xl:grid-cols-2">
       <form
         className="soft-card space-y-5 p-6 md:p-7"
         onSubmit={async (e) => {
           e.preventDefault();
+
+          if (isEditing) {
+            await onUpdateWorker?.({
+              firstName,
+              lastName,
+              email,
+              phone,
+              ...(password ? { password } : {}),
+            });
+            return;
+          }
+
           await onCreateWorker({
             firstName,
             lastName,
@@ -32,21 +82,35 @@ export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Prop
             phone,
             password,
           });
-          setFirstName('');
-          setLastName('');
-          setEmail('');
-          setPhone('');
-          setPassword('');
+
+          resetWorkerForm();
         }}
       >
-        <div>
-          <p className="section-subtitle">Trabajadores</p>
-          <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
-            Nuevo trabajador
-          </h3>
-          <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
-            Registra personal operativo para atención y gestión de pedidos.
-          </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="section-subtitle">Trabajadores</p>
+            <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+              {isEditing ? 'Editar trabajador' : 'Nuevo trabajador'}
+            </h3>
+            <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+              {isEditing
+                ? 'Actualiza la información del trabajador seleccionado.'
+                : 'Registra personal operativo para atención y gestión de pedidos.'}
+            </p>
+          </div>
+
+          {isEditing ? (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                resetWorkerForm();
+                onCancelEdit?.();
+              }}
+            >
+              Cancelar
+            </button>
+          ) : null}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -94,20 +158,24 @@ export function WorkerForm({ workers, branches, onCreateWorker, onAssign }: Prop
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold">Contraseña</label>
+            <label className="text-sm font-semibold">
+              {isEditing ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+            </label>
             <input
               className="input-soft"
               placeholder="********"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              required={!isEditing}
             />
           </div>
         </div>
 
         <div className="flex justify-end">
-          <button className="btn-primary">Crear trabajador</button>
+          <button className="btn-primary">
+            {isEditing ? 'Actualizar trabajador' : 'Crear trabajador'}
+          </button>
         </div>
       </form>
 
