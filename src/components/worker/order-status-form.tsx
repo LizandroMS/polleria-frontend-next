@@ -24,7 +24,7 @@ export function OrderStatusForm({ currentStatus, onSubmit }: Props) {
   const options = statusOptionsByCurrent[currentStatus] ?? [];
 
   if (!options.length) {
-    return <p className="text-sm text-gray-500">No hay más cambios permitidos.</p>;
+    return <p className="text-sm" style={{ color: 'var(--text-soft)' }}>No hay más cambios permitidos.</p>;
   }
 
   return (
@@ -39,7 +39,7 @@ export function OrderStatusForm({ currentStatus, onSubmit }: Props) {
       }}
     >
       <select
-        className="w-full rounded-xl border px-4 py-3"
+        className="input-soft"
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         required
@@ -53,15 +53,13 @@ export function OrderStatusForm({ currentStatus, onSubmit }: Props) {
       </select>
 
       <textarea
-        className="w-full rounded-xl border px-4 py-3"
+        className="input-soft min-h-[110px]"
         placeholder="Comentario opcional"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
 
-      <button className="rounded-xl bg-black px-4 py-2 text-white">
-        Actualizar estado
-      </button>
+      <button className="btn-primary">Actualizar estado</button>
     </form>
   );
 }
