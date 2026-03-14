@@ -71,13 +71,13 @@ a {
 
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition;
-    background: rgb(233, 7, 7);
+    background: white;
     border-color: var(--border-soft);
     color: var(--text-main);
   }
 
   .btn-secondary:hover {
-    background: #e09335;
+    background: white;
   }
 
   .chip-soft {
