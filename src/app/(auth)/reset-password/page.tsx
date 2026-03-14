@@ -1,11 +1,11 @@
 'use client';
 
+import { Suspense, useState } from 'react';
 import { useResetPassword } from '@/features/auth/hooks/use-reset-password';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token') ?? '';
@@ -21,6 +21,11 @@ export default function ResetPasswordPage() {
         className="soft-card w-full space-y-5 p-6"
         onSubmit={async (e) => {
           e.preventDefault();
+
+          if (!token) {
+            alert('El enlace no es válido');
+            return;
+          }
 
           if (password !== confirmPassword) {
             alert('Las contraseñas no coinciden');
@@ -78,5 +83,21 @@ export default function ResetPasswordPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-4 py-8">
+          <div className="soft-card w-full p-6 text-sm" style={{ color: 'var(--text-soft)' }}>
+            Cargando...
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
