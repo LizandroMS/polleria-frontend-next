@@ -1,47 +1,82 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
+import { useCart } from '@/hooks/use-cart';
+import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import LogoImg from '../../../public/logo.png';
 
 type NavItemProps = {
   href: string;
   label: string;
   active: boolean;
+  badge?: number;
 };
 
-function NavItem({ href, label, active }: NavItemProps) {
+function NavItem({ href, label, active, badge }: NavItemProps) {
   return (
     <Link
       href={href}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-        active
-          ? 'bg-black text-white shadow-sm'
-          : 'text-gray-700 hover:bg-gray-100 hover:text-black'
-      }`}
+      className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${active
+        ? 'text-white shadow-sm'
+        : 'text-gray-700 hover:bg-white hover:text-gray-900'
+        }`}
+      style={active ? { background: 'var(--primary)' } : {}}
     >
-      {label}
+      <span>{label}</span>
+
+      {badge && badge > 0 ? (
+        <span
+          className={`inline-flex min-h-[22px] min-w-[22px] items-center justify-center rounded-full px-1 text-xs font-bold ${active ? 'bg-white text-black' : 'text-white'
+            }`}
+          style={!active ? { background: 'var(--primary)' } : {}}
+        >
+          {badge}
+        </span>
+      ) : null}
     </Link>
   );
 }
 
 export function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const { totalItems, hydrated } = useCart();
+  const carBadge = hydrated ? totalItems : 0;
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <header
+      className="sticky top-0 z-50 border-b backdrop-blur-xl"
+      style={{
+        background: 'rgba(255, 250, 245, 0.88)',
+        borderColor: 'var(--border-soft)',
+      }}
+    >
+      <div className="app-container flex items-center justify-between py-4">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-black text-lg font-bold text-white shadow-sm">
-            P
-          </div>
+          <Image
+            src={LogoImg} // Usa la variable importada en lugar de un string
+            alt="Pollería el Sabrosito"
+            width={60}
+            height={60}
+            className="rounded-full object-cover"
+            priority // Agrega esto para que el logo cargue de inmediato
+          />
 
           <div className="leading-tight">
-            <p className="text-xl font-extrabold tracking-tight text-gray-900">
+            <p className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--dark)' }}>
               Pollería el Sabrosito
             </p>
-            <p className="text-xs text-gray-500">Sabor peruano directo a tu mesa</p>
+            <p className="text-xs" style={{ color: 'var(--text-soft)' }}>
+              Sabor peruano directo a tu mesa
+            </p>
           </div>
         </Link>
 
@@ -53,7 +88,12 @@ export function Navbar() {
             label="Promociones"
             active={pathname === '/promociones'}
           />
-          <NavItem href="/carrito" label="Carrito" active={pathname === '/carrito'} />
+          <NavItem
+            href="/carrito"
+            label="Carrito"
+            active={pathname === '/carrito'}
+            badge={carBadge}
+          />
 
           {user?.role === 'CUSTOMER' ? (
             <>
@@ -90,31 +130,37 @@ export function Navbar() {
         <div className="hidden items-center gap-3 lg:flex">
           {!user ? (
             <>
-              <Link
-                href="/login"
-                className="rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-50"
-              >
+              <Link href="/login" className="btn-secondary">
                 Ingresar
               </Link>
-
-              <Link
-                href="/registro"
-                className="rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600"
-              >
+              <Link href="/registro" className="btn-primary">
                 Registrarme
               </Link>
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="hidden rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 xl:block">
+              <div
+                className="hidden rounded-full px-4 py-2 text-sm xl:block"
+                style={{
+                  background: '#fff',
+                  color: 'var(--text-soft)',
+                  border: '1px solid var(--border-soft)',
+                }}
+              >
                 {user.first_name}
               </div>
-              <Link
-                href="/carrito"
-                className="rounded-full bg-black px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]"
-              >
+
+              <Link href="/carrito" className="btn-primary relative">
                 Ver carrito
+                {carBadge > 0 ? (
+                  <span className="ml-2 inline-flex min-h-[22px] min-w-[22px] items-center justify-center rounded-full bg-white px-1 text-xs font-bold text-black">
+                    {carBadge}
+                  </span>
+                ) : null}
               </Link>
+              <button onClick={handleLogout} className="btn-secondary">
+                Cerrar sesión
+              </button>
             </div>
           )}
         </div>

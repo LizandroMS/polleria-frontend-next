@@ -14,7 +14,7 @@ export function AddressForm({ onSubmit }: Props) {
 
   return (
     <form
-      className="grid gap-3 rounded-2xl border bg-white p-5"
+      className="grid gap-4"
       onSubmit={async (e) => {
         e.preventDefault();
         await onSubmit({
@@ -29,14 +29,52 @@ export function AddressForm({ onSubmit }: Props) {
         setReference('');
       }}
     >
-      <h3 className="text-lg font-semibold">Nueva dirección</h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Etiqueta</label>
+          <input
+            className="input-soft"
+            placeholder="Casa, Trabajo..."
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          />
+        </div>
 
-      <input className="rounded-xl border px-4 py-3" placeholder="Etiqueta (Casa, Trabajo)" value={label} onChange={(e) => setLabel(e.target.value)} />
-      <input className="rounded-xl border px-4 py-3" placeholder="Dirección" value={addressLine} onChange={(e) => setAddressLine(e.target.value)} required />
-      <input className="rounded-xl border px-4 py-3" placeholder="Distrito" value={district} onChange={(e) => setDistrict(e.target.value)} />
-      <input className="rounded-xl border px-4 py-3" placeholder="Referencia" value={reference} onChange={(e) => setReference(e.target.value)} />
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Distrito</label>
+          <input
+            className="input-soft"
+            placeholder="Barranca"
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+          />
+        </div>
 
-      <button className="rounded-xl bg-black px-4 py-3 text-white">Guardar dirección</button>
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">Dirección</label>
+          <input
+            className="input-soft"
+            placeholder="Av. Principal 123"
+            value={addressLine}
+            onChange={(e) => setAddressLine(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">Referencia</label>
+          <textarea
+            className="input-soft min-h-[110px]"
+            placeholder="Frente al parque, al lado de..."
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <button className="btn-primary">Guardar dirección</button>
+      </div>
     </form>
   );
 }

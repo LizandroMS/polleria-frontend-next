@@ -89,6 +89,7 @@ export const useCartStore = create<CartStore>()(
                 set({
                     items: [],
                     checkoutCustomer: null,
+                    selectedBranchId: null,
                 }),
 
             markHydrated: () => set({ hydrated: true }),

@@ -2,6 +2,7 @@
 
 import { useLogin } from '@/features/auth/hooks/use-login';
 import { useAuth } from '@/hooks/use-auth';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -67,6 +68,11 @@ export default function LoginPage() {
             <a href="/registro" className="font-medium text-black underline">
               Regístrate
             </a>
+          </p>
+          <p className="mt-3 text-right text-sm">
+            <Link href="/forgot-password" className="underline" style={{ color: 'var(--primary)' }}>
+              ¿Olvidaste tu contraseña?
+            </Link>
           </p>
         </div>
       </form>
