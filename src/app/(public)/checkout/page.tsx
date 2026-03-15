@@ -10,7 +10,7 @@ import { useCreateOrder } from '@/features/orders/hooks/use-create-order';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -33,24 +33,43 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'YAPE' | 'PLIN' | 'CARD'>('CASH');
   const [invoiceType, setInvoiceType] = useState<'NONE' | 'BOLETA_SIMPLE' | 'FACTURA'>('NONE');
   const [notes, setNotes] = useState('');
-  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+  const [selectedAddressId, setSelectedAddressId] = useState('');
 
   const selectedAddress = useMemo(
     () => addresses.find((address: any) => address.id === selectedAddressId),
     [addresses, selectedAddressId],
   );
 
+  useEffect(() => {
+    if (!user) return;
+    if (checkoutCustomer) return;
+
+    setCheckoutCustomer({
+      firstName: user.first_name ?? '',
+      lastName: user.last_name ?? '',
+      phone: user.phone ?? '',
+      email: user.email ?? '',
+      documentNumber: '',
+      businessName: '',
+      addressText: '',
+    });
+  }, [user, checkoutCustomer, setCheckoutCustomer]);
+
+  const hasPendingBranch = items.some((item) => item.branchId === 'pending-branch');
+  const hasDeliveryAddress =
+    orderType !== 'DELIVERY' || !!selectedAddressId || !!checkoutCustomer?.addressText;
+
   const canSubmit =
     !!user &&
     !!token &&
     !!selectedBranchId &&
     !!checkoutCustomer &&
-    !items.some((item) => item.branchId === 'pending-branch') &&
-    (orderType !== 'DELIVERY' || !!selectedAddressId || !!checkoutCustomer?.addressText);
+    !hasPendingBranch &&
+    hasDeliveryAddress;
 
   if (!items.length) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="app-container py-8">
         <EmptyState
           title="No hay productos en el carrito"
           description="Agrega productos antes de continuar."
@@ -103,123 +122,182 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <PageHeader
-        title="Checkout"
-        description="Completa tus datos para confirmar tu pedido."
-      />
+    <div
+      className="min-h-screen py-10"
+      style={{
+        background:
+          'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 45%, #fffaf5 100%)',
+      }}
+    >
+      <div className="app-container space-y-8">
+        <section
+          className="rounded-[32px] px-6 py-10 md:px-10"
+          style={{
+            background: 'linear-gradient(135deg, #f7ede3 0%, #fff7ef 100%)',
+            border: '1px solid var(--border-soft)',
+          }}
+        >
+          <PageHeader
+            title="Checkout"
+            description="Completa tus datos para confirmar tu pedido."
+          />
+        </section>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-4">
-          {!selectedBranchId ? (
-            <EmptyState
-              title="Selecciona una sucursal"
-              description="Debes elegir una sucursal desde el carrito para continuar."
-            />
-          ) : (
-            <CheckoutCustomerForm
-              initialData={checkoutCustomer}
-              onSubmit={setCheckoutCustomer}
-              invoiceType={invoiceType}
-            />
-          )}
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          <div className="space-y-5">
+            {!selectedBranchId ? (
+              <EmptyState
+                title="Selecciona una sucursal"
+                description="Debes elegir una sucursal desde el carrito para continuar."
+              />
+            ) : (
+              <CheckoutCustomerForm
+                initialData={checkoutCustomer}
+                onSubmit={setCheckoutCustomer}
+                invoiceType={invoiceType}
+              />
+            )}
 
-          {!loading && !user ? <CheckoutAuthRequired /> : null}
+            {!loading && !user ? <CheckoutAuthRequired /> : null}
 
-          {orderType === 'DELIVERY' && user ? (
-            <div className="rounded-2xl border bg-white p-5 space-y-3">
-              <h3 className="text-lg font-semibold">Dirección de entrega</h3>
+            {orderType === 'DELIVERY' && user ? (
+              <section className="soft-card space-y-4 p-6">
+                <div>
+                  <p className="section-subtitle">Entrega</p>
+                  <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+                    Dirección de entrega
+                  </h3>
+                </div>
 
-              {addresses.length ? (
-                <select
-                  className="w-full rounded-xl border px-4 py-3"
-                  value={selectedAddressId}
-                  onChange={(e) => setSelectedAddressId(e.target.value)}
-                >
-                  <option value="">Selecciona una dirección guardada</option>
-                  {addresses.map((address: any) => (
-                    <option key={address.id} value={address.id}>
-                      {address.label || 'Dirección'} - {address.address_line}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <p className="text-sm text-gray-600">
-                  No tienes direcciones guardadas. Puedes registrar una en tu perfil o usar la
-                  dirección escrita en tus datos del cliente.
-                </p>
-              )}
-            </div>
-          ) : null}
-
-          <div className="rounded-2xl border bg-white p-5 space-y-4">
-            <h3 className="text-lg font-semibold">Configuración del pedido</h3>
-
-            <select
-              className="w-full rounded-xl border px-4 py-3"
-              value={orderType}
-              onChange={(e) => {
-                const nextValue = e.target.value as 'DELIVERY' | 'PICKUP' | 'DINE_IN';
-                setOrderType(nextValue);
-
-                if (nextValue !== 'DELIVERY') {
-                  setSelectedAddressId('');
-                }
-              }}
-            >
-              <option value="DELIVERY">Delivery</option>
-              <option value="PICKUP">Recojo</option>
-              <option value="DINE_IN">Consumo en local</option>
-            </select>
-
-            <select
-              className="w-full rounded-xl border px-4 py-3"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as 'CASH' | 'YAPE' | 'PLIN' | 'CARD')}
-            >
-              <option value="CASH">Efectivo</option>
-              <option value="YAPE">Yape</option>
-              <option value="PLIN">Plin</option>
-              <option value="CARD">Tarjeta</option>
-            </select>
-
-            <select
-              className="w-full rounded-xl border px-4 py-3"
-              value={invoiceType}
-              onChange={(e) =>
-                setInvoiceType(e.target.value as 'NONE' | 'BOLETA_SIMPLE' | 'FACTURA')
-              }
-            >
-              <option value="NONE">Sin comprobante</option>
-              <option value="BOLETA_SIMPLE">Boleta simple</option>
-              <option value="FACTURA">Factura</option>
-            </select>
-
-            <textarea
-              className="w-full rounded-xl border px-4 py-3"
-              placeholder="Notas del pedido"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-
-            {createOrderMutation.isError ? (
-              <p className="text-sm text-red-600">
-                {(createOrderMutation.error as Error).message}
-              </p>
+                {addresses.length ? (
+                  <select
+                    className="input-soft"
+                    value={selectedAddressId}
+                    onChange={(e) => setSelectedAddressId(e.target.value)}
+                  >
+                    <option value="">Selecciona una dirección guardada</option>
+                    {addresses.map((address: any) => (
+                      <option key={address.id} value={address.id}>
+                        {address.label || 'Dirección'} - {address.address_line}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-sm" style={{ color: 'var(--text-soft)' }}>
+                    No tienes direcciones guardadas. Puedes registrar una en tu perfil o usar la
+                    dirección escrita en tus datos del cliente.
+                  </p>
+                )}
+              </section>
             ) : null}
 
-            <button
-              disabled={!canSubmit || createOrderMutation.isPending}
-              onClick={handleCreateOrder}
-              className="rounded-xl bg-black px-5 py-3 text-white disabled:opacity-50"
-            >
-              {createOrderMutation.isPending ? 'Creando pedido...' : 'Confirmar pedido'}
-            </button>
-          </div>
-        </div>
+            <section className="soft-card space-y-4 p-6">
+              <div>
+                <p className="section-subtitle">Configuración</p>
+                <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+                  Datos del pedido
+                </h3>
+              </div>
 
-        <div>
-          <CartSummary subtotal={subtotal} totalItems={totalItems} />
+              <select
+                className="input-soft"
+                value={orderType}
+                onChange={(e) => {
+                  const nextValue = e.target.value as 'DELIVERY' | 'PICKUP' | 'DINE_IN';
+                  setOrderType(nextValue);
+
+                  if (nextValue !== 'DELIVERY') {
+                    setSelectedAddressId('');
+                  }
+                }}
+              >
+                <option value="DELIVERY">Delivery</option>
+                <option value="PICKUP">Recojo</option>
+                <option value="DINE_IN">Consumo en local</option>
+              </select>
+
+              <select
+                className="input-soft"
+                value={paymentMethod}
+                onChange={(e) =>
+                  setPaymentMethod(e.target.value as 'CASH' | 'YAPE' | 'PLIN' | 'CARD')
+                }
+              >
+                <option value="CASH">Efectivo</option>
+                <option value="YAPE">Yape</option>
+                <option value="PLIN">Plin</option>
+                <option value="CARD">Tarjeta</option>
+              </select>
+
+              <select
+                className="input-soft"
+                value={invoiceType}
+                onChange={(e) =>
+                  setInvoiceType(e.target.value as 'NONE' | 'BOLETA_SIMPLE' | 'FACTURA')
+                }
+              >
+                <option value="NONE">Sin comprobante</option>
+                <option value="BOLETA_SIMPLE">Boleta simple</option>
+                <option value="FACTURA">Factura</option>
+              </select>
+
+              <textarea
+                className="input-soft min-h-[110px]"
+                placeholder="Notas del pedido"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+
+              {!selectedBranchId ? (
+                <p className="text-sm text-red-600">Debes seleccionar una sucursal.</p>
+              ) : null}
+
+              {hasPendingBranch ? (
+                <p className="text-sm text-red-600">
+                  Hay productos en el carrito sin sucursal asignada.
+                </p>
+              ) : null}
+
+              {!checkoutCustomer ? (
+                <p className="text-sm text-red-600">
+                  Debes guardar los datos del cliente antes de confirmar.
+                </p>
+              ) : null}
+
+              {orderType === 'DELIVERY' && !selectedAddressId && !checkoutCustomer?.addressText ? (
+                <p className="text-sm text-red-600">
+                  Para delivery debes seleccionar una dirección o escribir una manualmente.
+                </p>
+              ) : null}
+
+              {!user ? (
+                <p className="text-sm text-red-600">
+                  Debes iniciar sesión o registrarte para continuar.
+                </p>
+              ) : null}
+
+              {createOrderMutation.isError ? (
+                <p className="text-sm text-red-600">
+                  {(createOrderMutation.error as Error).message}
+                </p>
+              ) : null}
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  disabled={!canSubmit || createOrderMutation.isPending}
+                  onClick={handleCreateOrder}
+                  className="btn-primary disabled:opacity-50"
+                >
+                  {createOrderMutation.isPending ? 'Creando pedido...' : 'Confirmar pedido'}
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <div>
+            <CartSummary subtotal={subtotal} totalItems={totalItems} />
+          </div>
         </div>
       </div>
     </div>

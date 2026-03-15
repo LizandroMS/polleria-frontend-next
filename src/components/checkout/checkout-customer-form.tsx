@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type CheckoutCustomerData = {
   firstName: string;
@@ -23,19 +23,32 @@ export function CheckoutCustomerForm({
   invoiceType = 'NONE',
   onSubmit,
 }: Props) {
-  const [firstName, setFirstName] = useState(initialData?.firstName ?? '');
-  const [lastName, setLastName] = useState(initialData?.lastName ?? '');
-  const [phone, setPhone] = useState(initialData?.phone ?? '');
-  const [email, setEmail] = useState(initialData?.email ?? '');
-  const [documentNumber, setDocumentNumber] = useState(initialData?.documentNumber ?? '');
-  const [businessName, setBusinessName] = useState(initialData?.businessName ?? '');
-  const [addressText, setAddressText] = useState(initialData?.addressText ?? '');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [documentNumber, setDocumentNumber] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [addressText, setAddressText] = useState('');
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setFirstName(initialData?.firstName ?? '');
+    setLastName(initialData?.lastName ?? '');
+    setPhone(initialData?.phone ?? '');
+    setEmail(initialData?.email ?? '');
+    setDocumentNumber(initialData?.documentNumber ?? '');
+    setBusinessName(initialData?.businessName ?? '');
+    setAddressText(initialData?.addressText ?? '');
+  }, [initialData]);
 
   return (
     <form
-      className="space-y-4 rounded-2xl border bg-white p-5"
+      className="space-y-4 rounded-[28px] border bg-white p-6 shadow-sm"
+      style={{ borderColor: 'var(--border-soft)' }}
       onSubmit={(e) => {
         e.preventDefault();
+
         onSubmit({
           firstName,
           lastName,
@@ -45,71 +58,127 @@ export function CheckoutCustomerForm({
           businessName,
           addressText,
         });
+
+        setSaved(true);
+
+        setTimeout(() => {
+          setSaved(false);
+        }, 2500);
       }}
     >
-      <h3 className="text-lg font-semibold">Datos del cliente</h3>
+      <div>
+        <p className="section-subtitle">Checkout</p>
+        <h3 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+          Datos del cliente
+        </h3>
+        <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+          Completa tus datos para continuar con el pedido.
+        </p>
+      </div>
 
-      <input
-        className="w-full rounded-xl border px-4 py-3"
-        placeholder="Nombres"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Nombres</label>
+          <input
+            className="input-soft"
+            placeholder="Nombres"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+        </div>
 
-      <input
-        className="w-full rounded-xl border px-4 py-3"
-        placeholder="Apellidos"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-      />
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Apellidos</label>
+          <input
+            className="input-soft"
+            placeholder="Apellidos"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </div>
 
-      <input
-        className="w-full rounded-xl border px-4 py-3"
-        placeholder="Teléfono"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        required
-      />
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Teléfono</label>
+          <input
+            className="input-soft"
+            placeholder="999999999"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+        </div>
 
-      <input
-        className="w-full rounded-xl border px-4 py-3"
-        placeholder="Correo"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Correo</label>
+          <input
+            className="input-soft"
+            placeholder="correo@ejemplo.com"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-      {invoiceType === 'BOLETA_SIMPLE' || invoiceType === 'FACTURA' ? (
-        <input
-          className="w-full rounded-xl border px-4 py-3"
-          placeholder={invoiceType === 'FACTURA' ? 'RUC' : 'DNI'}
-          value={documentNumber}
-          onChange={(e) => setDocumentNumber(e.target.value)}
-          required
-        />
+        {(invoiceType === 'BOLETA_SIMPLE' || invoiceType === 'FACTURA') ? (
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">
+              {invoiceType === 'FACTURA' ? 'RUC' : 'DNI'}
+            </label>
+            <input
+              className="input-soft"
+              placeholder={invoiceType === 'FACTURA' ? 'RUC' : 'DNI'}
+              value={documentNumber}
+              onChange={(e) => setDocumentNumber(e.target.value)}
+              required
+            />
+          </div>
+        ) : null}
+
+        {invoiceType === 'FACTURA' ? (
+          <div className="space-y-2">
+            <label className="text-sm font-semibold">Razón social</label>
+            <input
+              className="input-soft"
+              placeholder="Razón social"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              required
+            />
+          </div>
+        ) : null}
+
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-semibold">
+            Dirección manual de entrega o dirección fiscal
+          </label>
+          <textarea
+            className="input-soft min-h-[110px]"
+            placeholder="Dirección manual de entrega o dirección fiscal"
+            value={addressText}
+            onChange={(e) => setAddressText(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {saved ? (
+        <div
+          className="rounded-2xl px-4 py-3 text-sm"
+          style={{
+            background: '#f2fbf4',
+            border: '1px solid #b7e1c1',
+            color: '#1f6b34',
+          }}
+        >
+          Datos guardados correctamente. Ya puedes continuar con tu pedido.
+        </div>
       ) : null}
 
-      {invoiceType === 'FACTURA' ? (
-        <input
-          className="w-full rounded-xl border px-4 py-3"
-          placeholder="Razón social"
-          value={businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
-          required
-        />
-      ) : null}
-
-      <textarea
-        className="w-full rounded-xl border px-4 py-3"
-        placeholder="Dirección manual de entrega o dirección fiscal"
-        value={addressText}
-        onChange={(e) => setAddressText(e.target.value)}
-      />
-
-      <button className="rounded-xl bg-black px-5 py-3 text-white">
-        Guardar datos
-      </button>
+      <div className="flex justify-end">
+        <button className="btn-primary" type="submit">
+          Guardar datos
+        </button>
+      </div>
     </form>
   );
 }
