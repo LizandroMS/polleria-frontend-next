@@ -6,6 +6,8 @@ export type CartItem = {
   productName: string;
   imageUrl?: string | null;
   displayPrice: number;
+  originalPrice?: number | null;
+  promoPrice?: number | null;
   categoryName?: string;
 };
 

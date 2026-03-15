@@ -12,7 +12,9 @@ type Props = {
 export function ProductCard({ product }: Props) {
   const { selectedBranchId, setSelectedBranchId, addItem, sessionId, setSessionId } = useCart();
 
-  const displayPrice = Number(product.display_price ?? product.base_price);
+  const regularPrice = Number(product.reference_price ?? product.base_price);
+  const displayPrice = Number(product.display_price ?? product.promo_price ?? product.base_price);
+  const hasPromo = Number.isFinite(displayPrice) && Number.isFinite(regularPrice) && displayPrice < regularPrice;
 
   const handleAdd = () => {
     const currentSessionId = sessionId ?? getOrCreateSessionId();
@@ -34,6 +36,8 @@ export function ProductCard({ product }: Props) {
       productName: product.name,
       imageUrl: product.image_url,
       displayPrice,
+      originalPrice: hasPromo ? regularPrice : null,
+      promoPrice: hasPromo ? displayPrice : null,
       categoryName: product.category_name,
     });
   };
@@ -71,9 +75,19 @@ export function ProductCard({ product }: Props) {
         ) : null}
 
         <div className="flex items-center justify-between pt-2">
-          <span className="text-xl font-bold text-gray-900">
-            {formatCurrency(displayPrice)}
-          </span>
+          <div className="flex flex-col">
+            {hasPromo ? (
+              <span className="text-sm text-gray-400 line-through">
+                {formatCurrency(regularPrice)}
+              </span>
+            ) : null}
+            <span className="text-xl font-bold text-gray-900">
+              {formatCurrency(displayPrice)}
+            </span>
+            {hasPromo ? (
+              <span className="text-xs font-semibold text-emerald-600">Precio promo</span>
+            ) : null}
+          </div>
 
           <button
             onClick={handleAdd}

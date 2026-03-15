@@ -79,6 +79,11 @@ export default function AdminProductsPage() {
           { key: 'name', title: 'Nombre', render: (row: any) => row.name },
           { key: 'category', title: 'Categoría', render: (row: any) => row.category_name },
           { key: 'price', title: 'Precio base', render: (row: any) => `S/ ${row.base_price}` },
+          {
+            key: 'promoPrice',
+            title: 'Precio promo',
+            render: (row: any) => (row.promo_price ? `S/ ${row.promo_price}` : '—'),
+          },
           { key: 'active', title: 'Activo', render: (row: any) => (row.is_active ? 'Sí' : 'No') },
           {
             key: 'actions',

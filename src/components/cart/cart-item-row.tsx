@@ -29,9 +29,17 @@ export function CartItemRow({ item, onUpdateQuantity, onRemove }: Props) {
           {item.categoryName ? (
             <p className="text-sm text-gray-500">{item.categoryName}</p>
           ) : null}
-          <p className="mt-1 text-sm font-medium">
-            {formatCurrency(item.displayPrice)}
-          </p>
+          <div className="mt-1 flex flex-col">
+            {item.originalPrice && item.originalPrice > item.displayPrice ? (
+              <span className="text-xs text-gray-400 line-through">
+                {formatCurrency(item.originalPrice)}
+              </span>
+            ) : null}
+            <p className="text-sm font-medium">{formatCurrency(item.displayPrice)}</p>
+            {item.promoPrice ? (
+              <span className="text-xs font-semibold text-emerald-600">Precio promocional</span>
+            ) : null}
+          </div>
         </div>
       </div>
 

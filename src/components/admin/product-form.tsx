@@ -20,6 +20,7 @@ export function ProductForm({
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [basePrice, setBasePrice] = useState('');
+  const [promoPrice, setPromoPrice] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
@@ -32,6 +33,7 @@ export function ProductForm({
       setName('');
       setSlug('');
       setBasePrice('');
+      setPromoPrice('');
       setDescription('');
       setImageUrl('');
       setIsFeatured(false);
@@ -42,6 +44,7 @@ export function ProductForm({
     setName(initialData.name ?? '');
     setSlug(initialData.slug ?? '');
     setBasePrice(initialData.base_price?.toString() ?? '');
+    setPromoPrice(initialData.promo_price?.toString() ?? '');
     setDescription(initialData.description ?? '');
     setImageUrl(initialData.image_url ?? '');
     setIsFeatured(!!initialData.is_featured);
@@ -52,6 +55,7 @@ export function ProductForm({
     setName('');
     setSlug('');
     setBasePrice('');
+    setPromoPrice('');
     setDescription('');
     setImageUrl('');
     setIsFeatured(false);
@@ -68,6 +72,7 @@ export function ProductForm({
           name,
           slug,
           basePrice: Number(basePrice),
+          promoPrice: promoPrice === '' ? null : Number(promoPrice),
           description: description || undefined,
           imageUrl: imageUrl || undefined,
           isFeatured,
@@ -134,6 +139,22 @@ export function ProductForm({
             onChange={(e) => setBasePrice(e.target.value)}
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Precio promo</label>
+          <input
+            className="input-soft"
+            placeholder="Opcional"
+            type="number"
+            step="0.01"
+            min="0"
+            value={promoPrice}
+            onChange={(e) => setPromoPrice(e.target.value)}
+          />
+          <p className="text-xs" style={{ color: 'var(--text-soft)' }}>
+            Si lo dejas vacío, se cobrará el precio base o el precio por sucursal.
+          </p>
         </div>
 
         <div className="space-y-2">
