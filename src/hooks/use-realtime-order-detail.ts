@@ -11,6 +11,12 @@ export function useRealtimeOrderDetail(orderId?: string) {
   useEffect(() => {
     if (!orderId) return;
 
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ['order-by-id', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['my-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['worker-orders'] });
+    };
+
     const orderChannel = supabase
       .channel(`order-detail-${orderId}`)
       .on(
@@ -21,11 +27,7 @@ export function useRealtimeOrderDetail(orderId?: string) {
           table: 'orders',
           filter: `id=eq.${orderId}`,
         },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['order-by-id', orderId] });
-          queryClient.invalidateQueries({ queryKey: ['my-orders'] });
-          queryClient.invalidateQueries({ queryKey: ['worker-orders'] });
-        },
+        invalidate,
       )
       .subscribe();
 
@@ -39,16 +41,26 @@ export function useRealtimeOrderDetail(orderId?: string) {
           table: 'order_status_history',
           filter: `order_id=eq.${orderId}`,
         },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['order-by-id', orderId] });
-          queryClient.invalidateQueries({ queryKey: ['my-orders'] });
-          queryClient.invalidateQueries({ queryKey: ['worker-orders'] });
+        invalidate,
+      )
+      .subscribe();
+
+    const billingChannel = supabase
+      .channel(`order-billing-${orderId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'electronic_documents',
+          filter: `order_id=eq.${orderId}`,
         },
+        invalidate,
       )
       .subscribe();
 
     return () => {
-      removeChannels([orderChannel, historyChannel]);
+      removeChannels([orderChannel, historyChannel, billingChannel]);
     };
   }, [orderId, queryClient]);
 }
