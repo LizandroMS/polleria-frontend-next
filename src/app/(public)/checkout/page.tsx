@@ -56,14 +56,30 @@ export default function CheckoutPage() {
   }, [user, checkoutCustomer, setCheckoutCustomer]);
 
   const hasPendingBranch = items.some((item) => item.branchId === 'pending-branch');
+
+  const hasCustomerBasicData =
+    !!checkoutCustomer?.firstName?.trim() &&
+    !!checkoutCustomer?.phone?.trim();
+
+  const hasDocumentData =
+    invoiceType === 'NONE'
+      ? true
+      : invoiceType === 'BOLETA_SIMPLE'
+        ? !!checkoutCustomer?.documentNumber?.trim()
+        : !!checkoutCustomer?.documentNumber?.trim() &&
+          !!checkoutCustomer?.businessName?.trim();
+
   const hasDeliveryAddress =
-    orderType !== 'DELIVERY' || !!selectedAddressId || !!checkoutCustomer?.addressText;
+    orderType !== 'DELIVERY' ||
+    !!selectedAddressId ||
+    !!checkoutCustomer?.addressText?.trim();
 
   const canSubmit =
     !!user &&
     !!token &&
     !!selectedBranchId &&
-    !!checkoutCustomer &&
+    hasCustomerBasicData &&
+    hasDocumentData &&
     !hasPendingBranch &&
     hasDeliveryAddress;
 
@@ -105,8 +121,8 @@ export default function CheckoutPage() {
             : invoiceType === 'FACTURA'
               ? '6'
               : undefined,
-        documentNumber: checkoutCustomer.documentNumber,
-        businessName: checkoutCustomer.businessName,
+        documentNumber: checkoutCustomer.documentNumber?.trim() || undefined,
+        businessName: checkoutCustomer.businessName?.trim() || undefined,
         addressText,
       },
       items: items.map((item) => ({
@@ -258,13 +274,27 @@ export default function CheckoutPage() {
                 </p>
               ) : null}
 
-              {!checkoutCustomer ? (
+              {!hasCustomerBasicData ? (
                 <p className="text-sm text-red-600">
-                  Debes guardar los datos del cliente antes de confirmar.
+                  Completa los datos básicos del cliente.
                 </p>
               ) : null}
 
-              {orderType === 'DELIVERY' && !selectedAddressId && !checkoutCustomer?.addressText ? (
+              {invoiceType === 'BOLETA_SIMPLE' && !checkoutCustomer?.documentNumber?.trim() ? (
+                <p className="text-sm text-red-600">
+                  Debes ingresar el DNI para emitir boleta simple.
+                </p>
+              ) : null}
+
+              {invoiceType === 'FACTURA' &&
+              (!checkoutCustomer?.documentNumber?.trim() ||
+                !checkoutCustomer?.businessName?.trim()) ? (
+                <p className="text-sm text-red-600">
+                  Debes ingresar RUC y razón social para emitir factura.
+                </p>
+              ) : null}
+
+              {orderType === 'DELIVERY' && !selectedAddressId && !checkoutCustomer?.addressText?.trim() ? (
                 <p className="text-sm text-red-600">
                   Para delivery debes seleccionar una dirección o escribir una manualmente.
                 </p>

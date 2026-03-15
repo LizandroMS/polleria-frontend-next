@@ -30,7 +30,6 @@ export function CheckoutCustomerForm({
   const [documentNumber, setDocumentNumber] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [addressText, setAddressText] = useState('');
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     setFirstName(initialData?.firstName ?? '');
@@ -42,29 +41,31 @@ export function CheckoutCustomerForm({
     setAddressText(initialData?.addressText ?? '');
   }, [initialData]);
 
+  useEffect(() => {
+    onSubmit({
+      firstName,
+      lastName,
+      phone,
+      email,
+      documentNumber,
+      businessName,
+      addressText,
+    });
+  }, [
+    firstName,
+    lastName,
+    phone,
+    email,
+    documentNumber,
+    businessName,
+    addressText,
+    onSubmit,
+  ]);
+
   return (
-    <form
+    <div
       className="space-y-4 rounded-[28px] border bg-white p-6 shadow-sm"
       style={{ borderColor: 'var(--border-soft)' }}
-      onSubmit={(e) => {
-        e.preventDefault();
-
-        onSubmit({
-          firstName,
-          lastName,
-          phone,
-          email,
-          documentNumber,
-          businessName,
-          addressText,
-        });
-
-        setSaved(true);
-
-        setTimeout(() => {
-          setSaved(false);
-        }, 2500);
-      }}
     >
       <div>
         <p className="section-subtitle">Checkout</p>
@@ -160,25 +161,6 @@ export function CheckoutCustomerForm({
           />
         </div>
       </div>
-
-      {saved ? (
-        <div
-          className="rounded-2xl px-4 py-3 text-sm"
-          style={{
-            background: '#f2fbf4',
-            border: '1px solid #b7e1c1',
-            color: '#1f6b34',
-          }}
-        >
-          Datos guardados correctamente. Ya puedes continuar con tu pedido.
-        </div>
-      ) : null}
-
-      <div className="flex justify-end">
-        <button className="btn-primary" type="submit">
-          Guardar datos
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }
