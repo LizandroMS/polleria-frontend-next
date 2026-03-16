@@ -4,6 +4,7 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { PageHeader } from '@/components/shared/page-header';
 import { useMyOrders } from '@/features/orders/hooks/use-my-orders';
 import { useAuth } from '@/hooks/use-auth';
+import { useRealtimeMyOrders } from '@/hooks/use-realtime-my-orders';
 import Link from 'next/link';
 
 function statusLabel(status: string) {
@@ -30,6 +31,8 @@ function statusLabel(status: string) {
 export default function MyOrdersPage() {
   const { token } = useAuth();
   const { data = [], isLoading } = useMyOrders(token);
+
+  useRealtimeMyOrders();
 
   return (
     <div className="space-y-8">
