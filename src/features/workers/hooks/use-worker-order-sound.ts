@@ -4,8 +4,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const SOUND_ENABLED_KEY = 'polleria_worker_order_sound_enabled';
 
+type AudioContextConstructor = new () => AudioContext;
+
 type BrowserWindowWithAudio = Window & {
-  webkitAudioContext?: typeof AudioContext;
+  AudioContext?: AudioContextConstructor;
+  webkitAudioContext?: AudioContextConstructor;
 };
 
 function getAudioContextConstructor() {
