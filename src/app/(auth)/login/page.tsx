@@ -6,6 +6,20 @@ import { useState } from 'react';
 import { useLogin } from '@/features/auth/hooks/use-login';
 import { useAuth } from '@/hooks/use-auth';
 
+
+function getSafeRedirect(defaultPath: string) {
+  if (typeof window === 'undefined') return defaultPath;
+
+  const redirect = new URLSearchParams(window.location.search).get('redirect');
+
+  // Nota para mí: solo permito rutas internas para evitar redirecciones externas.
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) {
+    return defaultPath;
+  }
+
+  return redirect;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const { loginSession } = useAuth();
@@ -100,7 +114,7 @@ export default function LoginPage() {
                     });
 
                     await loginSession(data.accessToken, data.user);
-                    router.push('/');
+                    router.push(getSafeRedirect('/'));
                   } catch (error) {
                     console.error(error);
                   }

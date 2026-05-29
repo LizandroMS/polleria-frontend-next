@@ -5,7 +5,14 @@ import { removeChannels } from '@/lib/supabase/realtime';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-export function useRealtimeWorkerOrders(branchIds?: string[]) {
+type RealtimeWorkerOrdersOptions = {
+  onNewOrder?: (order: Record<string, unknown>) => void;
+};
+
+export function useRealtimeWorkerOrders(
+  branchIds?: string[],
+  options?: RealtimeWorkerOrdersOptions,
+) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -22,9 +29,14 @@ export function useRealtimeWorkerOrders(branchIds?: string[]) {
             table: 'orders',
             filter: `branch_id=eq.${branchId}`,
           },
-          () => {
+          (payload) => {
             queryClient.invalidateQueries({ queryKey: ['worker-orders'] });
             queryClient.invalidateQueries({ queryKey: ['order-by-id'] });
+
+            // Nota para mí: solo suena cuando llega un pedido nuevo, no cuando cambia de estado.
+            if (payload.eventType === 'INSERT') {
+              options?.onNewOrder?.(payload.new as Record<string, unknown>);
+            }
           },
         )
         .subscribe();
@@ -51,5 +63,5 @@ export function useRealtimeWorkerOrders(branchIds?: string[]) {
     return () => {
       removeChannels(channels);
     };
-  }, [branchIds?.join(','), queryClient]);
+  }, [branchIds?.join(','), options?.onNewOrder, queryClient]);
 }

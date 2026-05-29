@@ -5,6 +5,20 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+
+function getSafeRedirect(defaultPath: string) {
+  if (typeof window === 'undefined') return defaultPath;
+
+  const redirect = new URLSearchParams(window.location.search).get('redirect');
+
+  // Nota para mí: solo permito rutas internas para evitar redirecciones externas.
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) {
+    return defaultPath;
+  }
+
+  return redirect;
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const { loginSession } = useAuth();
@@ -33,7 +47,7 @@ export default function RegisterPage() {
             });
 
             await loginSession(data.accessToken, data.user);
-            router.push('/checkout');
+            router.push(getSafeRedirect('/checkout'));
           } catch (error) {
             console.error(error);
           }

@@ -4,20 +4,36 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { WorkerOrderCard } from '@/components/worker/worker-order-card';
 import { useChangeOrderStatus } from '@/features/orders/hooks/use-change-order-status';
 import { useWorkerOrders } from '@/features/orders/hooks/use-worker-orders';
+import { useWorkerOrderSound } from '@/features/workers/hooks/use-worker-order-sound';
 import { useMyBranches } from '@/features/workers/hooks/use-my-branches';
 import { useAuth } from '@/hooks/use-auth';
 import { useRealtimeWorkerOrders } from '@/hooks/use-realtime-worker-orders';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export default function WorkerOrdersPage() {
   const { token } = useAuth();
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  const { data: myBranches = [] } = useMyBranches(token);
-  const { data = [], isLoading, refetch } = useWorkerOrders(token, statusFilter || undefined);
+  const { data: rawMyBranches = [] } = useMyBranches(token);
+  const { data: rawData = [], isLoading, refetch } = useWorkerOrders(token, statusFilter || undefined);
+  const myBranches = Array.isArray(rawMyBranches) ? rawMyBranches : [];
+  const data = Array.isArray(rawData) ? rawData : [];
   const changeStatusMutation = useChangeOrderStatus(token);
+  const {
+    enabled: soundEnabled,
+    supported: soundSupported,
+    enableSound,
+    disableSound,
+    playNewOrderSound,
+  } = useWorkerOrderSound();
 
-  useRealtimeWorkerOrders(myBranches.map((branch: any) => branch.branch_id));
+  const handleNewOrder = useCallback(() => {
+    void playNewOrderSound();
+  }, [playNewOrderSound]);
+
+  useRealtimeWorkerOrders(myBranches.map((branch: any) => branch.branch_id), {
+    onNewOrder: handleNewOrder,
+  });
 
   const handleChangeStatus = async (orderId: string, status: string, comment?: string) => {
     await changeStatusMutation.mutateAsync({ orderId, status, comment });
@@ -69,6 +85,53 @@ export default function WorkerOrdersPage() {
             {statusFilter || 'Todos'}
           </p>
         </div>
+      </section>
+
+      <section className="soft-card p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="section-subtitle">Alertas</p>
+            <h2 className="mt-2 text-2xl font-extrabold" style={{ color: 'var(--dark)' }}>
+              Sonido de nuevos pedidos
+            </h2>
+            <p className="mt-2 text-sm" style={{ color: 'var(--text-soft)' }}>
+              Activa el sonido para que el panel avise cada vez que llegue un pedido nuevo.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              className="rounded-full px-3 py-1 text-xs font-semibold"
+              style={{
+                background: soundEnabled ? '#dcfce7' : '#f3f4f6',
+                color: soundEnabled ? '#166534' : 'var(--text-soft)',
+              }}
+            >
+              {soundEnabled ? 'Sonido activado' : 'Sonido desactivado'}
+            </span>
+
+            {soundEnabled ? (
+              <button type="button" className="btn-secondary" onClick={disableSound}>
+                Desactivar sonido
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary disabled:opacity-50"
+                onClick={() => void enableSound()}
+                disabled={!soundSupported}
+              >
+                Activar sonido
+              </button>
+            )}
+          </div>
+        </div>
+
+        {!soundSupported ? (
+          <p className="mt-3 text-sm text-red-600">
+            Este navegador no soporta la reproducción de alertas de audio.
+          </p>
+        ) : null}
       </section>
 
       <section className="soft-card p-5">

@@ -6,7 +6,7 @@ import { useCartStore } from '@/features/cart/store/cart.store';
 export function useCart() {
   const sessionId = useCartStore((state) => state.sessionId);
   const selectedBranchId = useCartStore((state) => state.selectedBranchId);
-  const items = useCartStore((state) => state.items);
+  const items = useCartStore((state) => (Array.isArray(state.items) ? state.items : []));
   const checkoutCustomer = useCartStore((state) => state.checkoutCustomer);
   const hydrated = useCartStore((state) => state.hydrated);
 
@@ -20,12 +20,16 @@ export function useCart() {
   const replacePendingBranch = useCartStore((state) => state.replacePendingBranch);
 
   const totalItems = useMemo(
-    () => items.reduce((acc, item) => acc + item.quantity, 0),
+    () => items.reduce((acc, item) => acc + Number(item.quantity || 0), 0),
     [items],
   );
 
   const subtotal = useMemo(
-    () => items.reduce((acc, item) => acc + item.displayPrice * item.quantity, 0),
+    () =>
+      items.reduce(
+        (acc, item) => acc + Number(item.displayPrice || 0) * Number(item.quantity || 0),
+        0,
+      ),
     [items],
   );
 

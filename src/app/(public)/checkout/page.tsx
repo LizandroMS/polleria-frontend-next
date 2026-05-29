@@ -23,11 +23,13 @@ export default function CheckoutPage() {
     totalItems,
     selectedBranchId,
     checkoutCustomer,
+    hydrated,
     setCheckoutCustomer,
     clearCart,
   } = useCart();
 
-  const { data: addresses = [] } = useMyAddresses(token);
+  const { data: rawAddresses = [] } = useMyAddresses(token);
+  const addresses = Array.isArray(rawAddresses) ? rawAddresses : [];
 
   const [orderType, setOrderType] = useState<'DELIVERY' | 'PICKUP' | 'DINE_IN'>('DELIVERY');
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'YAPE' | 'PLIN' | 'CARD'>('CASH');
@@ -55,7 +57,8 @@ export default function CheckoutPage() {
     });
   }, [user, checkoutCustomer, setCheckoutCustomer]);
 
-  const hasPendingBranch = items.some((item) => item.branchId === 'pending-branch');
+  const safeItems = Array.isArray(items) ? items : [];
+  const hasPendingBranch = safeItems.some((item) => item.branchId === 'pending-branch');
 
   const hasCustomerBasicData =
     !!checkoutCustomer?.firstName?.trim() &&
@@ -83,7 +86,18 @@ export default function CheckoutPage() {
     !hasPendingBranch &&
     hasDeliveryAddress;
 
-  if (!items.length) {
+  if (!hydrated) {
+    return (
+      <div className="app-container py-8">
+        <EmptyState
+          title="Cargando checkout"
+          description="Estamos recuperando los productos de tu carrito."
+        />
+      </div>
+    );
+  }
+
+  if (!safeItems.length) {
     return (
       <div className="app-container py-8">
         <EmptyState
@@ -125,7 +139,7 @@ export default function CheckoutPage() {
         businessName: checkoutCustomer.businessName?.trim() || undefined,
         addressText,
       },
-      items: items.map((item) => ({
+      items: safeItems.map((item) => ({
         productId: item.productId,
         branchId: item.branchId,
         quantity: item.quantity,

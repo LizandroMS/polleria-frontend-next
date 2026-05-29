@@ -9,10 +9,10 @@ export function CheckoutAuthRequired() {
       </p>
 
       <div className="mt-4 flex gap-3">
-        <Link href="/login" className="rounded-xl bg-black px-4 py-2 text-white">
+        <Link href="/login?redirect=/checkout" className="rounded-xl bg-black px-4 py-2 text-white">
           Iniciar sesión
         </Link>
-        <Link href="/registro" className="rounded-xl border px-4 py-2">
+        <Link href="/registro?redirect=/checkout" className="rounded-xl border px-4 py-2">
           Registrarme
         </Link>
       </div>

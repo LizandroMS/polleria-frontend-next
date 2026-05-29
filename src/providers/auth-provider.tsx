@@ -2,7 +2,6 @@
 
 import { getMe } from '@/features/auth/api/me';
 import { mergeCart } from '@/features/cart/api/merge-cart';
-import { useCartStore } from '@/features/cart/store/cart.store';
 import { getSessionId } from '@/features/cart/utils/cart-session';
 import { AuthUser } from '@/features/auth/types';
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
@@ -24,7 +23,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const clearCart = useCartStore((state) => state.clearCart);
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -62,8 +60,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     if (sessionId) {
       try {
+        // Nota para mí: el carrito visible del checkout vive en Zustand/localStorage.
+        // No debo limpiarlo aquí porque el cliente puede haber agregado productos
+        // antes de iniciar sesión y todavía los necesita para confirmar el pedido.
+        // La fusión con backend queda como operación best-effort.
         await mergeCart(sessionId, newToken);
-        clearCart();
       } catch (error) {
         console.error('Error fusionando carrito:', error);
       }
