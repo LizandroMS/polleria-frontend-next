@@ -1,0 +1,51 @@
+export type ReclamationDocumentType = 'DNI' | 'CE' | 'PASSPORT' | 'RUC';
+export type ReclamationGoodType = 'PRODUCT' | 'SERVICE';
+export type ReclamationClaimType = 'RECLAMO' | 'QUEJA';
+export type ReclamationStatus = 'RECEIVED' | 'IN_REVIEW' | 'ANSWERED' | 'CLOSED';
+
+export type CreateReclamationPayload = {
+  consumerFullName: string;
+  consumerDocumentType: ReclamationDocumentType;
+  consumerDocumentNumber: string;
+  consumerEmail: string;
+  consumerPhone?: string;
+  consumerAddress?: string;
+  isMinor?: boolean;
+  guardianFullName?: string;
+  guardianDocumentNumber?: string;
+  branchId?: string;
+  orderNumber?: string;
+  goodType: ReclamationGoodType;
+  amount?: number;
+  description: string;
+  claimType: ReclamationClaimType;
+  detail: string;
+  requestedSolution: string;
+  consumerAcceptsTerms: boolean;
+};
+
+export type Reclamation = {
+  id: string;
+  claim_code: string;
+  consumer_full_name: string;
+  consumer_document_type: ReclamationDocumentType;
+  consumer_document_number: string;
+  consumer_email: string;
+  consumer_phone: string | null;
+  consumer_address: string | null;
+  is_minor: boolean;
+  guardian_full_name: string | null;
+  guardian_document_number: string | null;
+  branch_id: string | null;
+  branch_name_snapshot: string | null;
+  order_number: string | null;
+  good_type: ReclamationGoodType;
+  amount: string | null;
+  description: string;
+  claim_type: ReclamationClaimType;
+  detail: string;
+  requested_solution: string;
+  status: ReclamationStatus;
+  created_at: string;
+  updated_at: string;
+};
