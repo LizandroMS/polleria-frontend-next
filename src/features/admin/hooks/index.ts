@@ -30,3 +30,4 @@ export * from './use-update-worker'
 
 export * from './use-update-branch';
 export * from './use-toggle-branch';
+export * from './use-emit-document';

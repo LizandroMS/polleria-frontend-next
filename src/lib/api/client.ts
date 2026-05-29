@@ -7,12 +7,10 @@ type ApiResponse<T> = {
 };
 
 async function readJsonResponse<T>(response: Response): Promise<ApiResponse<T>> {
-  const text = await response.text();
-
   try {
-    return JSON.parse(text) as ApiResponse<T>;
+    return (await response.json()) as ApiResponse<T>;
   } catch {
-    throw new Error(response.ok ? 'No se pudo leer la respuesta del servidor' : `Error HTTP ${response.status}`);
+    throw new Error('No se pudo leer la respuesta del servidor');
   }
 }
 
