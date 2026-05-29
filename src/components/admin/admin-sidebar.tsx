@@ -13,6 +13,7 @@ const links = [
   { href: '/admin/sucursales', label: 'Sucursales', icon: '📍' },
   { href: '/admin/trabajadores', label: 'Trabajadores', icon: '👨‍🍳' },
   { href: '/admin/comprobantes', label: 'Comprobantes', icon: '📄' },
+  { href: '/admin/series-comprobantes', label: 'Series', icon: '🔢' },
 ];
 
 export function AdminSidebar() {
