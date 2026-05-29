@@ -41,17 +41,15 @@ export function CheckoutCustomerForm({
     setAddressText(initialData?.addressText ?? '');
   }, [initialData]);
 
-  useEffect(() => {
-    onSubmit({
-      firstName,
-      lastName,
-      phone,
-      email,
-      documentNumber,
-      businessName,
-      addressText,
-    });
-  }, [
+  const syncCustomer = (nextData: CheckoutCustomerData) => {
+    // Nota para mí:
+    // Sincronizo el formulario con el store solo cuando el usuario cambia un campo.
+    // Evito un useEffect que llame setState en cada render porque puede generar
+    // bucles de render en producción al combinar React + Zustand persistido.
+    onSubmit(nextData);
+  };
+
+  const buildCustomer = (overrides: Partial<CheckoutCustomerData> = {}): CheckoutCustomerData => ({
     firstName,
     lastName,
     phone,
@@ -59,8 +57,8 @@ export function CheckoutCustomerForm({
     documentNumber,
     businessName,
     addressText,
-    onSubmit,
-  ]);
+    ...overrides,
+  });
 
   return (
     <div
@@ -84,7 +82,11 @@ export function CheckoutCustomerForm({
             className="input-soft"
             placeholder="Nombres"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setFirstName(value);
+              syncCustomer(buildCustomer({ firstName: value }));
+            }}
             required
           />
         </div>
@@ -95,7 +97,11 @@ export function CheckoutCustomerForm({
             className="input-soft"
             placeholder="Apellidos"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLastName(value);
+              syncCustomer(buildCustomer({ lastName: value }));
+            }}
           />
         </div>
 
@@ -105,7 +111,11 @@ export function CheckoutCustomerForm({
             className="input-soft"
             placeholder="999999999"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPhone(value);
+              syncCustomer(buildCustomer({ phone: value }));
+            }}
             required
           />
         </div>
@@ -117,11 +127,15 @@ export function CheckoutCustomerForm({
             placeholder="correo@ejemplo.com"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setEmail(value);
+              syncCustomer(buildCustomer({ email: value }));
+            }}
           />
         </div>
 
-        {(invoiceType === 'BOLETA_SIMPLE' || invoiceType === 'FACTURA') ? (
+        {invoiceType === 'BOLETA_SIMPLE' || invoiceType === 'FACTURA' ? (
           <div className="space-y-2">
             <label className="text-sm font-semibold">
               {invoiceType === 'FACTURA' ? 'RUC' : 'DNI'}
@@ -130,7 +144,11 @@ export function CheckoutCustomerForm({
               className="input-soft"
               placeholder={invoiceType === 'FACTURA' ? 'RUC' : 'DNI'}
               value={documentNumber}
-              onChange={(e) => setDocumentNumber(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDocumentNumber(value);
+                syncCustomer(buildCustomer({ documentNumber: value }));
+              }}
               required
             />
           </div>
@@ -143,7 +161,11 @@ export function CheckoutCustomerForm({
               className="input-soft"
               placeholder="Razón social"
               value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setBusinessName(value);
+                syncCustomer(buildCustomer({ businessName: value }));
+              }}
               required
             />
           </div>
@@ -157,7 +179,11 @@ export function CheckoutCustomerForm({
             className="input-soft min-h-[110px]"
             placeholder="Dirección manual de entrega o dirección fiscal"
             value={addressText}
-            onChange={(e) => setAddressText(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAddressText(value);
+              syncCustomer(buildCustomer({ addressText: value }));
+            }}
           />
         </div>
       </div>

@@ -11,11 +11,27 @@ type BrowserWindowWithAudio = Window & {
   webkitAudioContext?: AudioContextConstructor;
 };
 
-function getAudioContextConstructor() {
+function getAudioContextConstructor(): AudioContextConstructor | null {
   if (typeof window === 'undefined') return null;
 
   const audioWindow = window as BrowserWindowWithAudio;
   return audioWindow.AudioContext ?? audioWindow.webkitAudioContext ?? null;
+}
+
+function playBeep(context: AudioContext, startAt: number, frequency: number, volume = 0.22) {
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+  gain.gain.setValueAtTime(0.0001, startAt);
+  gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.28);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + 0.3);
 }
 
 export function useWorkerOrderSound() {
@@ -63,19 +79,8 @@ export function useWorkerOrderSound() {
     setEnabled(true);
 
     // Nota para mí: reproduzco un sonido corto al activar para confirmar que el navegador ya permitió audio.
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, context.currentTime);
-    gain.gain.setValueAtTime(0.0001, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.2);
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(context.currentTime);
-    oscillator.stop(context.currentTime + 0.22);
+    const now = context.currentTime;
+    playBeep(context, now, 880, 0.18);
   }, [ensureAudioContext]);
 
   const disableSound = useCallback(() => {
@@ -91,25 +96,9 @@ export function useWorkerOrderSound() {
       if (!context) return;
 
       // Nota para mí: dos beeps cortos para que el trabajador identifique rápido un pedido nuevo.
-      const playBeep = (startAt: number, frequency: number) => {
-        const oscillator = context.createOscillator();
-        const gain = context.createGain();
-
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, startAt);
-        gain.gain.setValueAtTime(0.0001, startAt);
-        gain.gain.exponentialRampToValueAtTime(0.22, startAt + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.28);
-
-        oscillator.connect(gain);
-        gain.connect(context.destination);
-        oscillator.start(startAt);
-        oscillator.stop(startAt + 0.3);
-      };
-
       const now = context.currentTime;
-      playBeep(now, 880);
-      playBeep(now + 0.36, 1046);
+      playBeep(context, now, 880);
+      playBeep(context, now + 0.36, 1046);
     } catch (error) {
       console.error('No se pudo reproducir el sonido del nuevo pedido:', error);
     }

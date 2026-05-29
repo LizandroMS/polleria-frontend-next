@@ -24,6 +24,11 @@ type CartStore = {
   replacePendingBranch: (branchId: string) => void;
 };
 
+type PersistedCartState = Pick<
+  CartStore,
+  'sessionId' | 'selectedBranchId' | 'items' | 'checkoutCustomer'
+>;
+
 function normalizeNumber(value: unknown, fallback = 0) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : fallback;
@@ -69,6 +74,45 @@ function normalizeCheckoutCustomer(data: unknown): CheckoutCustomerData | null {
   };
 }
 
+function normalizePersistedCartState(state: unknown): PersistedCartState {
+  const rawState =
+    state && typeof state === 'object' && 'state' in state
+      ? (state as { state?: unknown }).state
+      : state;
+
+  const persisted =
+    rawState && typeof rawState === 'object' ? (rawState as Partial<CartStore>) : {};
+
+  const items = Array.isArray(persisted.items)
+    ? persisted.items
+        .map((item) => normalizeCartItem(item as Partial<CartItem>))
+        .filter((item): item is CartItem => Boolean(item))
+    : [];
+
+  return {
+    sessionId: typeof persisted.sessionId === 'string' ? persisted.sessionId : null,
+    selectedBranchId:
+      typeof persisted.selectedBranchId === 'string' ? persisted.selectedBranchId : null,
+    items,
+    checkoutCustomer: normalizeCheckoutCustomer(persisted.checkoutCustomer),
+  };
+}
+
+function areCheckoutCustomersEqual(
+  current: CheckoutCustomerData | null,
+  next: CheckoutCustomerData | null,
+) {
+  return (
+    (current?.firstName ?? '') === (next?.firstName ?? '') &&
+    (current?.lastName ?? '') === (next?.lastName ?? '') &&
+    (current?.phone ?? '') === (next?.phone ?? '') &&
+    (current?.email ?? '') === (next?.email ?? '') &&
+    (current?.documentNumber ?? '') === (next?.documentNumber ?? '') &&
+    (current?.businessName ?? '') === (next?.businessName ?? '') &&
+    (current?.addressText ?? '') === (next?.addressText ?? '')
+  );
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
@@ -90,7 +134,16 @@ export const useCartStore = create<CartStore>()(
 
       setSelectedBranchId: (branchId) => set({ selectedBranchId: branchId }),
 
-      setCheckoutCustomer: (data) => set({ checkoutCustomer: normalizeCheckoutCustomer(data) }),
+      setCheckoutCustomer: (data) =>
+        set((state) => {
+          const normalized = normalizeCheckoutCustomer(data);
+
+          if (areCheckoutCustomersEqual(state.checkoutCustomer, normalized)) {
+            return state;
+          }
+
+          return { checkoutCustomer: normalized };
+        }),
 
       addItem: (item) =>
         set((state) => {
@@ -147,26 +200,27 @@ export const useCartStore = create<CartStore>()(
     {
       name: 'polleria-cart-storage',
       storage: createJSONStorage(() => localStorage),
-      version: 1,
+      version: 2,
+      // Nota para mí:
+      // Esta migración evita que clientes con carritos guardados de versiones anteriores
+      // rompan el checkout después de publicar cambios en la estructura del store.
+      migrate: (persistedState) =>
+        normalizePersistedCartState(persistedState) as unknown as CartStore,
+      partialize: (state) => ({
+        sessionId: state.sessionId,
+        selectedBranchId: state.selectedBranchId,
+        items: state.items,
+        checkoutCustomer: state.checkoutCustomer,
+      }),
       merge: (persistedState, currentState) => {
-        const persisted = (persistedState ?? {}) as Partial<CartStore>;
-        const items = Array.isArray(persisted.items)
-          ? persisted.items
-              .map((item) => normalizeCartItem(item as Partial<CartItem>))
-              .filter((item): item is CartItem => Boolean(item))
-          : [];
+        const persisted = normalizePersistedCartState(persistedState);
 
         return {
           ...currentState,
-          ...persisted,
-          sessionId:
-            typeof persisted.sessionId === 'string' ? persisted.sessionId : currentState.sessionId,
-          selectedBranchId:
-            typeof persisted.selectedBranchId === 'string'
-              ? persisted.selectedBranchId
-              : currentState.selectedBranchId,
-          items,
-          checkoutCustomer: normalizeCheckoutCustomer(persisted.checkoutCustomer),
+          sessionId: persisted.sessionId,
+          selectedBranchId: persisted.selectedBranchId,
+          items: persisted.items,
+          checkoutCustomer: persisted.checkoutCustomer,
           hydrated: false,
         };
       },
