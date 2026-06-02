@@ -10,8 +10,18 @@ export async function register(payload: RegisterPayload): Promise<AuthResponse> 
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      ...payload,
-      projectCode: payload.projectCode ?? CURRENT_PROJECT_CODE,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phone: payload.phone,
+      email: payload.email,
+      password: payload.password,
+      /**
+       * Nota para mí:
+       * Registro la cuenta dentro del proyecto POL. Si el usuario ya existe
+       * en otro proyecto y usa la misma contraseña, el backend puede asociarlo
+       * también a pollería sin duplicar el registro en users.
+       */
+      projectCode: CURRENT_PROJECT_CODE,
     }),
   });
 
