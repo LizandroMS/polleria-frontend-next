@@ -1,3 +1,5 @@
+export type ProjectCode = 'POL' | 'ROP';
+
 export type AuthUser = {
   id: string;
   role: 'ADMIN' | 'WORKER' | 'CUSTOMER';
@@ -5,6 +7,8 @@ export type AuthUser = {
   last_name: string | null;
   email: string;
   phone: string | null;
+  projectCode?: ProjectCode;
+  projectName?: string;
 };
 
 export type AuthResponse = {
@@ -15,6 +19,7 @@ export type AuthResponse = {
 export type LoginPayload = {
   email: string;
   password: string;
+  projectCode?: ProjectCode;
 };
 
 export type RegisterPayload = {
@@ -23,4 +28,5 @@ export type RegisterPayload = {
   email: string;
   phone?: string;
   password: string;
+  projectCode?: ProjectCode;
 };

@@ -1,3 +1,4 @@
+import { CURRENT_PROJECT_CODE } from '../constants/project-code';
 import { AuthResponse, LoginPayload } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -8,7 +9,10 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      ...payload,
+      projectCode: payload.projectCode ?? CURRENT_PROJECT_CODE,
+    }),
   });
 
   const json = await response.json();
