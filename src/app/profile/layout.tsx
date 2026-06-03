@@ -9,13 +9,7 @@ export default function ProfileLayout({
 }>) {
   return (
     <RequireCustomer>
-      <div
-        className="min-h-screen"
-        style={{
-          background:
-            'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 40%, #fffaf5 100%)',
-        }}
-      >
+      <div className="page-shell">
         <Navbar />
         <main className="app-container py-8">{children}</main>
         <Footer />

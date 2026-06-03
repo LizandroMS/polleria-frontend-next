@@ -8,13 +8,7 @@ export default function WorkerLayout({
 }>) {
   return (
     <RequireWorker>
-      <div
-        className="min-h-screen"
-        style={{
-          background:
-            'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 40%, #fffaf5 100%)',
-        }}
-      >
+      <div className="page-shell">
         <WorkerHeader />
         <main className="app-container py-8">{children}</main>
       </div>

@@ -20,21 +20,15 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      className="h-fit rounded-[30px] border p-5 shadow-sm"
-      style={{
-        background: 'rgba(255,255,255,0.82)',
-        borderColor: 'var(--border-soft)',
-        backdropFilter: 'blur(12px)',
-      }}
-    >
-      <div className="mb-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--primary)' }}>
-          Administración
-        </p>
+    <aside className="glass-card h-fit p-5 lg:sticky lg:top-24">
+      <div className="mb-5 rounded-[24px] p-4" style={{ background: 'linear-gradient(135deg, #fff0e5, #fffaf5)' }}>
+        <p className="section-subtitle">Administración</p>
         <h2 className="mt-2 text-xl font-extrabold" style={{ color: 'var(--dark)' }}>
           Menú principal
         </h2>
+        <p className="mt-2 text-xs leading-5" style={{ color: 'var(--text-soft)' }}>
+          Gestiona tu operación diaria desde un solo lugar.
+        </p>
       </div>
 
       <nav className="flex flex-col gap-2">
@@ -45,20 +39,22 @@ export function AdminSidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition"
+              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition duration-200"
               style={
                 active
                   ? {
                       background: 'linear-gradient(135deg, var(--primary), #d98250)',
                       color: 'white',
-                      boxShadow: '0 10px 24px rgba(201, 106, 61, 0.18)',
+                      boxShadow: '0 14px 30px rgba(201, 106, 61, 0.2)',
                     }
                   : {
                       color: 'var(--text-main)',
                     }
               }
             >
-              <span className="text-base">{link.icon}</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl text-base" style={!active ? { background: 'var(--primary-soft)' } : { background: 'rgba(255,255,255,0.18)' }}>
+                {link.icon}
+              </span>
               <span>{link.label}</span>
             </Link>
           );

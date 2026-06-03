@@ -10,7 +10,7 @@ export function RequireCustomer({ children }: Props) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="app-container py-10">Cargando...</div>;
+    return <div className="page-shell"><div className="app-container"><div className="loading-panel">Cargando...</div></div></div>;
   }
 
   if (!user || user.role !== 'CUSTOMER') {

@@ -1,6 +1,5 @@
 'use client';
 
-import { belongsToCurrentProject } from '@/features/auth/constants/project-code';
 import { getMe } from '@/features/auth/api/me';
 import { mergeCart } from '@/features/cart/api/merge-cart';
 import { getSessionId } from '@/features/cart/utils/cart-session';
@@ -19,16 +18,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = 'polleria_access_token';
 
-function validateProjectAccess(user: AuthUser) {
-  if (!belongsToCurrentProject(user.projectCode)) {
-    throw new Error('Tu cuenta no tiene acceso al sistema de pollería.');
-  }
-}
-
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -40,17 +34,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        const profile = await getMe(savedToken);
-
-        /**
-         * Nota para mí:
-         * Si el backend devuelve projectCode y no pertenece a POL, limpio la sesión.
-         * Esto protege el frontend de pollería cuando el navegador también se usa
-         * para el proyecto de ropa con el mismo backend compartido.
-         */
-        validateProjectAccess(profile);
-
         setToken(savedToken);
+
+        const profile = await getMe(savedToken);
         setUser(profile);
       } catch (error) {
         console.error('Error rehidratando sesión:', error);
@@ -66,8 +52,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   const loginSession = async (newToken: string, newUser: AuthUser) => {
-    validateProjectAccess(newUser);
-
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
     setUser(newUser);

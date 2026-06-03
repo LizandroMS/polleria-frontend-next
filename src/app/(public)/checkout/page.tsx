@@ -153,21 +153,14 @@ export default function CheckoutPage() {
 
   return (
     <div
-      className="min-h-screen py-10"
-      style={{
-        background:
-          'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 45%, #fffaf5 100%)',
-      }}
+      className="page-shell"
     >
       <div className="app-container space-y-8">
         <section
-          className="rounded-[32px] px-6 py-10 md:px-10"
-          style={{
-            background: 'linear-gradient(135deg, #f7ede3 0%, #fff7ef 100%)',
-            border: '1px solid var(--border-soft)',
-          }}
+          className="page-hero"
         >
           <PageHeader
+            eyebrow="Confirmación"
             title="Checkout"
             description="Completa tus datos para confirmar tu pedido."
           />

@@ -10,7 +10,7 @@ export function RequireWorker({ children }: Props) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="mx-auto max-w-7xl px-4 py-8">Cargando...</div>;
+    return <div className="page-shell"><div className="app-container"><div className="loading-panel">Cargando...</div></div></div>;
   }
 
   if (!user || (user.role !== 'WORKER' && user.role !== 'ADMIN')) {

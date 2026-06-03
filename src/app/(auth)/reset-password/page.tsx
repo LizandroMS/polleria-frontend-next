@@ -16,9 +16,9 @@ function ResetPasswordContent() {
   const mutation = useResetPassword();
 
   return (
-    <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-4 py-8">
+    <div className="page-shell flex items-center">
       <form
-        className="soft-card w-full space-y-5 p-6"
+        className="soft-card mx-auto w-full max-w-md space-y-5 p-6 md:p-8"
         onSubmit={async (e) => {
           e.preventDefault();
 
@@ -90,8 +90,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-4 py-8">
-          <div className="soft-card w-full p-6 text-sm" style={{ color: 'var(--text-soft)' }}>
+        <div className="page-shell flex items-center">
+          <div className="soft-card mx-auto w-full max-w-md p-6 text-sm" style={{ color: 'var(--text-soft)' }}>
             Cargando...
           </div>
         </div>

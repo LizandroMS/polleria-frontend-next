@@ -10,15 +10,8 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email: payload.email,
-      password: payload.password,
-      /**
-       * Nota para mí:
-       * El backend de autenticación es compartido con otros proyectos.
-       * Desde el frontend de pollería siempre envío POL para que el login
-       * valide el acceso dentro de user_project_access sin afectar ROP.
-       */
-      projectCode: CURRENT_PROJECT_CODE,
+      ...payload,
+      projectCode: payload.projectCode ?? CURRENT_PROJECT_CODE,
     }),
   });
 

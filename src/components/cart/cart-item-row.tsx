@@ -11,50 +11,50 @@ type Props = {
 
 export function CartItemRow({ item, onUpdateQuantity, onRemove }: Props) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border bg-white p-4 md:flex-row md:items-center md:justify-between">
+    <div className="soft-card flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 rounded-xl bg-gray-100">
+        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-[#fff4e9]">
           {item.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={item.imageUrl}
-              alt={item.productName}
-              className="h-full w-full rounded-xl object-cover"
-            />
-          ) : null}
+            <img src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-xs" style={{ color: 'var(--text-soft)' }}>
+              Sin imagen
+            </div>
+          )}
         </div>
 
-        <div>
-          <h3 className="font-semibold">{item.productName}</h3>
-          {item.categoryName ? (
-            <p className="text-sm text-gray-500">{item.categoryName}</p>
-          ) : null}
-          <div className="mt-1 flex flex-col">
+        <div className="min-w-0">
+          <h3 className="font-extrabold" style={{ color: 'var(--dark)' }}>
+            {item.productName}
+          </h3>
+          {item.categoryName ? <p className="mt-1 text-sm" style={{ color: 'var(--text-soft)' }}>{item.categoryName}</p> : null}
+          <div className="mt-2 flex flex-col">
             {item.originalPrice && item.originalPrice > item.displayPrice ? (
-              <span className="text-xs text-gray-400 line-through">
+              <span className="text-xs line-through" style={{ color: 'var(--text-muted)' }}>
                 {formatCurrency(item.originalPrice)}
               </span>
             ) : null}
-            <p className="text-sm font-medium">{formatCurrency(item.displayPrice)}</p>
-            {item.promoPrice ? (
-              <span className="text-xs font-semibold text-emerald-600">Precio promocional</span>
-            ) : null}
+            <p className="text-sm font-bold" style={{ color: 'var(--dark)' }}>
+              {formatCurrency(item.displayPrice)}
+            </p>
+            {item.promoPrice ? <span className="text-xs font-semibold text-emerald-700">Precio promocional</span> : null}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <label className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-soft)' }}>
+          Cantidad
+        </label>
         <input
           type="number"
           min={1}
           value={item.quantity}
           onChange={(e) => onUpdateQuantity(Number(e.target.value))}
-          className="w-20 rounded-xl border px-3 py-2"
+          className="input-soft w-24 text-center"
         />
-        <button
-          onClick={onRemove}
-          className="rounded-xl border px-4 py-2 text-sm"
-        >
+        <button onClick={onRemove} className="btn-secondary px-4 py-2">
           Quitar
         </button>
       </div>

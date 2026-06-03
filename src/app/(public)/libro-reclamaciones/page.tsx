@@ -3,7 +3,8 @@ import { companyInfo } from '@/features/legal/constants/company-info';
 
 export default function LibroReclamacionesPage() {
   return (
-    <div className="app-container py-12">
+    <div className="page-shell">
+      <div className="app-container py-10">
       <section className="mb-8 max-w-4xl">
         <span className="chip-soft">Atención al consumidor</span>
         <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:text-5xl" style={{ color: 'var(--dark)' }}>
@@ -17,6 +18,7 @@ export default function LibroReclamacionesPage() {
       </section>
 
       <ReclamationForm />
+      </div>
     </div>
   );
 }

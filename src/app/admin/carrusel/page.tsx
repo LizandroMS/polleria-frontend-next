@@ -34,11 +34,7 @@ export default function AdminCarouselPage() {
   return (
     <div className="space-y-6">
       <div
-        className="rounded-[32px] px-6 py-8 md:px-10"
-        style={{
-          background: 'linear-gradient(135deg, #f7ede3 0%, #fff7ef 100%)',
-          border: '1px solid var(--border-soft)',
-        }}
+        className="page-hero"
       >
         <p className="section-subtitle">Administración</p>
         <h1 className="mt-2 text-3xl font-extrabold" style={{ color: 'var(--dark)' }}>
