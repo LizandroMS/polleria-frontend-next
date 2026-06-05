@@ -11,7 +11,6 @@ import {
   ReclamationGoodType,
 } from '../types';
 import { downloadReclamationPdf } from '../utils/reclamation-pdf';
-import { notify } from '@/shared/lib/notify';
 
 const initialForm: CreateReclamationPayload = {
   consumerFullName: '',
@@ -69,15 +68,13 @@ export function ReclamationForm() {
 
       setCreatedReclamation(reclamation);
       downloadReclamationPdf(reclamation);
-      notify.success('La reclamación se registró satisfactoriamente.', 'Se descargó la constancia en PDF.');
       setForm(initialForm);
     } catch (error) {
-      const message =
+      setErrorMessage(
         error instanceof Error
           ? error.message
-          : 'No se pudo registrar la reclamación. Intenta nuevamente.';
-      setErrorMessage(message);
-      notify.error(error, message);
+          : 'No se pudo registrar la reclamación. Intenta nuevamente.',
+      );
     } finally {
       setIsSubmitting(false);
     }

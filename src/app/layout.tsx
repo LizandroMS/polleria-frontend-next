@@ -1,7 +1,6 @@
 import './globals.css';
 import { AuthProvider } from '@/providers/auth-provider';
 import { QueryProvider } from '@/providers/query-provider';
-import { NotificationToaster } from '@/shared/lib/notify';
 
 export default function RootLayout({
   children,
@@ -13,7 +12,6 @@ export default function RootLayout({
       <body>
         <QueryProvider>
           <AuthProvider>{children}</AuthProvider>
-          <NotificationToaster />
         </QueryProvider>
       </body>
     </html>

@@ -8,7 +8,6 @@ import { PageHeader } from '@/components/shared/page-header';
 import { getOrCreateSessionId } from '@/features/cart/utils/cart-session';
 import { useCart } from '@/hooks/use-cart';
 import Link from 'next/link';
-import { notify } from '@/shared/lib/notify';
 import { useEffect } from 'react';
 
 export default function CartPage() {
@@ -55,24 +54,17 @@ export default function CartPage() {
           <div className="space-y-4">
             <BranchSelector
               selectedBranchId={selectedBranchId}
-              onSelect={(branchId) => {
-                replacePendingBranch(branchId);
-                notify.success('Sucursal seleccionada satisfactoriamente.');
-              }}
+              onSelect={replacePendingBranch}
             />
 
             {items.map((item) => (
               <CartItemRow
                 key={`${item.productId}-${item.branchId}`}
                 item={item}
-                onUpdateQuantity={(quantity) => {
-                  updateQuantity(item.productId, item.branchId, Math.max(1, quantity));
-                  notify.success('Cantidad actualizada satisfactoriamente.');
-                }}
-                onRemove={() => {
-                  removeItem(item.productId, item.branchId);
-                  notify.success('Producto retirado del carrito satisfactoriamente.');
-                }}
+                onUpdateQuantity={(quantity) =>
+                  updateQuantity(item.productId, item.branchId, Math.max(1, quantity))
+                }
+                onRemove={() => removeItem(item.productId, item.branchId)}
               />
             ))}
           </div>

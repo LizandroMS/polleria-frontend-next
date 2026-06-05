@@ -4,7 +4,6 @@ import { Product } from '@/features/products/types';
 import { getOrCreateSessionId } from '@/features/cart/utils/cart-session';
 import { useCart } from '@/hooks/use-cart';
 import { formatCurrency } from '@/lib/utils/currency';
-import { notify } from '@/shared/lib/notify';
 
 type Props = {
   product: Product;
@@ -41,8 +40,6 @@ export function ProductCard({ product }: Props) {
       promoPrice: hasPromo ? displayPrice : null,
       categoryName: product.category_name,
     });
-
-    notify.success('Producto agregado al carrito satisfactoriamente.');
   };
 
   return (
