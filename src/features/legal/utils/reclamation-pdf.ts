@@ -218,6 +218,7 @@ function buildPdf(lines: PdfLine[]) {
     pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
   });
 
+  
   const xrefOffset = pdf.length;
   pdf += `xref\n0 ${objects.length + 1}\n`;
   pdf += '0000000000 65535 f \n';
