@@ -9,11 +9,18 @@ export default function AdminLayout({
 }>) {
   return (
     <RequireAdmin>
-      <div className="page-shell">
+      <div
+        className="min-h-screen"
+        style={{
+          background:
+            'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 40%, #fffaf5 100%)',
+        }}
+      >
         <AdminHeader />
+
         <div className="app-container grid gap-6 py-6 lg:grid-cols-[280px_1fr]">
           <AdminSidebar />
-          <main className="min-w-0">{children}</main>
+          <main>{children}</main>
         </div>
       </div>
     </RequireAdmin>

@@ -7,8 +7,9 @@ export type AuthUser = {
   last_name: string | null;
   email: string;
   phone: string | null;
-  projectCode?: ProjectCode;
-  projectName?: string;
+  projectCode?: ProjectCode | string;
+  projectId?: string | null;
+  projectName?: string | null;
 };
 
 export type AuthResponse = {

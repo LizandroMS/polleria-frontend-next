@@ -10,7 +10,7 @@ export function RequireAdmin({ children }: Props) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="page-shell"><div className="app-container"><div className="loading-panel">Cargando...</div></div></div>;
+    return <div className="mx-auto max-w-7xl px-4 py-8">Cargando...</div>;
   }
 
   if (!user || user.role !== 'ADMIN') {

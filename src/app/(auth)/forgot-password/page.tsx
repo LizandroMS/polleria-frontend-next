@@ -10,9 +10,9 @@ export default function ForgotPasswordPage() {
   const [success, setSuccess] = useState(false);
 
   return (
-    <div className="page-shell flex items-center">
+    <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-4 py-8">
       <form
-        className="soft-card mx-auto w-full max-w-md space-y-5 p-6 md:p-8"
+        className="soft-card w-full space-y-5 p-6"
         onSubmit={async (e) => {
           e.preventDefault();
           await mutation.mutateAsync(email);

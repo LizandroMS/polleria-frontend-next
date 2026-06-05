@@ -3,8 +3,7 @@ import { companyInfo } from '@/features/legal/constants/company-info';
 
 export default function TerminosPage() {
   return (
-    <div className="page-shell">
-      <div className="app-container py-10">
+    <div className="app-container py-12">
       <section className="max-w-4xl">
         <span className="chip-soft">Términos y condiciones</span>
         <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:text-5xl" style={{ color: 'var(--dark)' }}>
@@ -66,7 +65,6 @@ export default function TerminosPage() {
           </Link>
         </div>
       </section>
-      </div>
     </div>
   );
 }

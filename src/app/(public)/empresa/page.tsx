@@ -3,8 +3,7 @@ import { companyInfo } from '@/features/legal/constants/company-info';
 
 export default function EmpresaPage() {
   return (
-    <div className="page-shell">
-      <div className="app-container py-10">
+    <div className="app-container py-12">
       <section className="max-w-4xl">
         <span className="chip-soft">Información legal</span>
         <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:text-5xl" style={{ color: 'var(--dark)' }}>
@@ -71,7 +70,6 @@ export default function EmpresaPage() {
           </Link>
         </aside>
       </section>
-      </div>
     </div>
   );
 }

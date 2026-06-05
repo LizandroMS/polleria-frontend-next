@@ -17,14 +17,21 @@ export default function MenuPage() {
 
   return (
     <div
-      className="page-shell"
+      className="min-h-screen py-10"
+      style={{
+        background:
+          'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 45%, #fffaf5 100%)',
+      }}
     >
       <div className="app-container space-y-8">
         <div
-          className="page-hero"
+          className="rounded-[32px] px-6 py-10 md:px-10"
+          style={{
+            background: 'linear-gradient(135deg, #f7ede3 0%, #fff7ef 100%)',
+            border: '1px solid var(--border-soft)',
+          }}
         >
           <PageHeader
-            eyebrow="Carta"
             title="Nuestra carta"
             description="Explora nuestros pollos, complementos, bebidas y promociones."
           />
@@ -58,7 +65,9 @@ export default function MenuPage() {
           </div>
 
           {loadingProducts ? (
-            <div className="loading-panel">Cargando productos...</div>
+            <div className="py-10 text-sm" style={{ color: 'var(--text-soft)' }}>
+              Cargando productos...
+            </div>
           ) : (
             <ProductGrid products={products} />
           )}

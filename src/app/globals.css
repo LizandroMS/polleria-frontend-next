@@ -1,47 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #fff8f1;
-  --bg-soft: #fffdf9;
+  --bg: #fffaf5;
   --surface: #ffffff;
-  --surface-warm: #fff1e2;
-  --surface-dark: #2a1810;
-  --primary: #c85f2c;
-  --primary-hover: #a94c22;
-  --primary-soft: #fff0e5;
-  --accent: #f2b85b;
-  --accent-soft: #fff7df;
-  --success: #15803d;
-  --warning: #b45309;
-  --danger: #b42318;
+  --surface-warm: #f7ede3;
+  --primary: #c96a3d;
+  --primary-hover: #b75b30;
+  --accent: #e8b86d;
   --text-main: #1f2937;
-  --text-soft: #64748b;
-  --text-muted: #94a3b8;
+  --text-soft: #6b7280;
   --border-soft: #eadfd2;
   --dark: #111827;
-  --shadow-soft: 0 18px 48px rgba(111, 64, 35, 0.1);
-  --shadow-hover: 0 24px 70px rgba(111, 64, 35, 0.16);
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
-  background:
-    radial-gradient(circle at 10% -10%, rgba(242, 184, 91, 0.18), transparent 32rem),
-    radial-gradient(circle at 90% 0%, rgba(200, 95, 44, 0.1), transparent 30rem),
-    var(--bg);
+  background: var(--bg);
   color: var(--text-main);
 }
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -52,181 +33,68 @@ a {
   text-decoration: none;
 }
 
-button,
-a,
-input,
-select,
-textarea {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-::selection {
-  background: rgba(200, 95, 44, 0.22);
-}
-
-/*
-  Nota para mí:
-  Estas utilidades globales buscan que todas las vistas mantengan una identidad visual
-  cálida, limpia y amigable, sin reescribir cada flujo de negocio ya estable.
-*/
 @layer components {
   .app-container {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
-  }
-
-  .page-shell {
-    @apply min-h-screen py-8 md:py-10;
-    background:
-      radial-gradient(circle at top left, rgba(255, 239, 221, 0.92) 0%, rgba(255, 250, 245, 0.92) 42%, rgba(255, 250, 245, 0.95) 100%);
-  }
-
-  .page-hero {
-    @apply relative overflow-hidden rounded-[32px] border px-6 py-8 shadow-sm md:px-10 md:py-10;
-    background:
-      linear-gradient(135deg, rgba(255, 242, 229, 0.96) 0%, rgba(255, 253, 249, 0.98) 55%, rgba(255, 247, 223, 0.94) 100%);
-    border-color: var(--border-soft);
-  }
-
-  .page-hero::before {
-    content: '';
-    position: absolute;
-    inset: auto -5rem -5rem auto;
-    width: 16rem;
-    height: 16rem;
-    border-radius: 999px;
-    background: rgba(242, 184, 91, 0.18);
-    filter: blur(26px);
+    @apply mx-auto max-w-7xl px-4;
   }
 
   .section-title {
-    @apply text-3xl font-extrabold tracking-tight md:text-4xl;
-    color: var(--dark);
+    @apply text-3xl font-extrabold tracking-tight;
+    color: var(--text-main);
   }
 
   .section-subtitle {
-    @apply text-xs font-extrabold uppercase tracking-[0.22em];
+    @apply text-sm font-semibold uppercase tracking-[0.18em];
     color: var(--primary);
-  }
-
-  .section-description {
-    @apply mt-3 max-w-2xl text-sm leading-7 md:text-base;
-    color: var(--text-soft);
   }
 
   .soft-card {
     @apply rounded-[28px] border shadow-sm;
-    background: rgba(255, 255, 255, 0.94);
+    background: var(--surface);
     border-color: var(--border-soft);
-    box-shadow: var(--shadow-soft);
   }
 
   .warm-card {
     @apply rounded-[28px] border shadow-sm;
-    background: linear-gradient(135deg, rgba(255, 241, 226, 0.98), rgba(255, 253, 249, 0.98));
+    background: var(--surface-warm);
     border-color: var(--border-soft);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .glass-card {
-    @apply rounded-[30px] border shadow-sm backdrop-blur-xl;
-    background: rgba(255, 255, 255, 0.78);
-    border-color: rgba(234, 223, 210, 0.9);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .interactive-card {
-    @apply transition duration-200 hover:-translate-y-1 hover:shadow-xl;
-  }
-
-  .metric-card {
-    @apply rounded-[26px] border p-5 shadow-sm;
-    background: rgba(255, 255, 255, 0.92);
-    border-color: var(--border-soft);
-    box-shadow: var(--shadow-soft);
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-bold text-white transition duration-200 disabled:opacity-50;
-    background: linear-gradient(135deg, var(--primary), #de7b43);
-    box-shadow: 0 14px 30px rgba(200, 95, 44, 0.22);
+    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition;
+    background: var(--primary);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-hover), var(--primary));
-    transform: translateY(-1px);
+    background: var(--primary-hover);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition duration-200 disabled:opacity-50;
-    background: rgba(255, 255, 255, 0.92);
+    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition;
+    background: white;
     border-color: var(--border-soft);
     color: var(--text-main);
   }
 
   .btn-secondary:hover {
-    background: var(--primary-soft);
-    color: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-
-  .btn-danger {
-    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition duration-200 disabled:opacity-50;
-    background: #fff5f5;
-    border-color: #fecaca;
-    color: var(--danger);
+    background: white;
   }
 
   .chip-soft {
-    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold;
-    background: var(--primary-soft);
+    @apply inline-flex rounded-full px-4 py-2 text-sm font-medium;
+    background: #f9e8db;
     color: var(--primary);
   }
 
-  .status-pill {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wide;
-    background: var(--primary-soft);
-    color: var(--primary-hover);
-  }
-
   .input-soft {
-    @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition;
+    @apply w-full rounded-2xl border px-4 py-3 outline-none transition;
     border-color: var(--border-soft);
-    background: rgba(255, 255, 255, 0.96);
+    background: white;
     color: var(--text-main);
-  }
-
-  .input-soft::placeholder {
-    color: var(--text-muted);
   }
 
   .input-soft:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(200, 95, 44, 0.12);
-  }
-
-  .admin-table-card {
-    @apply overflow-hidden rounded-[28px] border shadow-sm;
-    background: rgba(255, 255, 255, 0.96);
-    border-color: var(--border-soft);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .loading-panel {
-    @apply rounded-[28px] border p-8 text-sm shadow-sm;
-    background: rgba(255, 255, 255, 0.9);
-    border-color: var(--border-soft);
-    color: var(--text-soft);
-  }
-
-  .friendly-grid {
-    @apply grid gap-5 md:grid-cols-2 xl:grid-cols-3;
+    box-shadow: 0 0 0 3px rgba(201, 106, 61, 0.12);
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { uploadPublicImage } from '@/lib/supabase/storage';
+import { notify } from '@/shared/lib/notify';
 import { useState } from 'react';
 
 type Props = {
@@ -36,8 +37,10 @@ export function ImageUploadField({ bucket, folder, label, onUploaded }: Props) {
             });
 
             onUploaded(result.publicUrl);
+            notify.success('La imagen se subió satisfactoriamente.');
           } catch (err: any) {
             setError(err?.message ?? 'No se pudo subir la imagen');
+            notify.error(err, 'No se pudo subir la imagen.');
           } finally {
             setUploading(false);
           }

@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { getOrCreateSessionId } from '@/features/cart/utils/cart-session';
 import { useCart } from '@/hooks/use-cart';
 import Link from 'next/link';
+import { notify } from '@/shared/lib/notify';
 import { useEffect } from 'react';
 
 export default function CartPage() {
@@ -34,61 +35,60 @@ export default function CartPage() {
   }, [sessionId, setSessionId]);
 
   if (!hydrated) {
-    return (
-      <div className="page-shell">
-        <div className="app-container">
-          <div className="loading-panel">Cargando carrito...</div>
-        </div>
-      </div>
-    );
+    return <div className="mx-auto max-w-7xl px-4 py-8">Cargando carrito...</div>;
   }
 
   return (
-    <div className="page-shell">
-      <div className="app-container space-y-8">
-        <section className="page-hero">
-          <PageHeader
-            eyebrow="Carrito"
-            title="Tu pedido"
-            description="Revisa tus productos, confirma la sucursal y continúa al checkout cuando todo esté listo."
-          />
-        </section>
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <PageHeader
+        title="Tu carrito"
+        description="Revisa tus productos antes de continuar con el checkout."
+      />
 
-        {!items.length ? (
-          <EmptyState
-            title="Tu carrito está vacío"
-            description="Agrega productos desde la carta o promociones para iniciar tu pedido."
-            action={<Link href="/menu" className="btn-primary">Ver carta</Link>}
-          />
-        ) : (
-          <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-            <div className="space-y-5">
-              <BranchSelector selectedBranchId={selectedBranchId} onSelect={replacePendingBranch} />
+      {!items.length ? (
+        <EmptyState
+          title="Tu carrito está vacío"
+          description="Agrega productos desde la carta o promociones."
+        />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+          <div className="space-y-4">
+            <BranchSelector
+              selectedBranchId={selectedBranchId}
+              onSelect={(branchId) => {
+                replacePendingBranch(branchId);
+                notify.success('Sucursal seleccionada satisfactoriamente.');
+              }}
+            />
 
-              <div className="space-y-4">
-                {items.map((item) => (
-                  <CartItemRow
-                    key={`${item.productId}-${item.branchId}`}
-                    item={item}
-                    onUpdateQuantity={(quantity) => updateQuantity(item.productId, item.branchId, Math.max(1, quantity))}
-                    onRemove={() => removeItem(item.productId, item.branchId)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <CartSummary subtotal={subtotal} totalItems={totalItems} />
-              <Link href="/checkout" className="btn-primary w-full">
-                Continuar al checkout
-              </Link>
-              <Link href="/menu" className="btn-secondary w-full">
-                Seguir comprando
-              </Link>
-            </div>
+            {items.map((item) => (
+              <CartItemRow
+                key={`${item.productId}-${item.branchId}`}
+                item={item}
+                onUpdateQuantity={(quantity) => {
+                  updateQuantity(item.productId, item.branchId, Math.max(1, quantity));
+                  notify.success('Cantidad actualizada satisfactoriamente.');
+                }}
+                onRemove={() => {
+                  removeItem(item.productId, item.branchId);
+                  notify.success('Producto retirado del carrito satisfactoriamente.');
+                }}
+              />
+            ))}
           </div>
-        )}
-      </div>
+
+          <div className="space-y-4">
+            <CartSummary subtotal={subtotal} totalItems={totalItems} />
+
+            <Link
+              href="/checkout"
+              className="block rounded-2xl bg-black px-5 py-3 text-center text-white"
+            >
+              Continuar al checkout
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -12,21 +12,30 @@ export default function PromotionsPage() {
 
   return (
     <div
-      className="page-shell"
+      className="min-h-screen py-10"
+      style={{
+        background:
+          'radial-gradient(circle at top left, #fff6eb 0%, #fffaf5 45%, #fffaf5 100%)',
+      }}
     >
       <div className="app-container space-y-8">
         <section
-          className="page-hero"
+          className="rounded-[32px] px-6 py-10 md:px-10"
+          style={{
+            background: 'linear-gradient(135deg, #f7ede3 0%, #fff7ef 100%)',
+            border: '1px solid var(--border-soft)',
+          }}
         >
           <PageHeader
-            eyebrow="Ofertas"
             title="Promociones"
             description="Descubre nuestras mejores ofertas, combos y descuentos especiales."
           />
         </section>
 
         {isLoading ? (
-          <div className="loading-panel">Cargando promociones...</div>
+          <div className="py-10 text-sm" style={{ color: 'var(--text-soft)' }}>
+            Cargando promociones...
+          </div>
         ) : !data.length ? (
           <EmptyState title="No hay promociones activas" />
         ) : (

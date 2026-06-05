@@ -41,12 +41,12 @@ function NavItem({ href, label, active, badge, onClick }: NavItemProps) {
     <Link
       href={href}
       onClick={onClick}
-      className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition duration-200 ${
+      className={`relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
         active
           ? 'text-white shadow-sm'
-          : 'text-gray-700 hover:bg-white/85 hover:text-gray-900'
+          : 'text-gray-700 hover:bg-white hover:text-gray-900'
       }`}
-      style={active ? { background: 'linear-gradient(135deg, var(--primary), #de7b43)' } : {}}
+      style={active ? { background: 'var(--primary)' } : {}}
     >
       <span>{label}</span>
 
@@ -94,11 +94,11 @@ export function Navbar() {
     <header
       className="sticky top-0 z-50 border-b backdrop-blur-xl"
       style={{
-        background: 'rgba(255, 250, 245, 0.92)',
+        background: 'rgba(255, 250, 245, 0.94)',
         borderColor: 'var(--border-soft)',
       }}
     >
-      <div className="app-container py-3">
+      <div className="app-container py-4">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <Image
@@ -106,7 +106,7 @@ export function Navbar() {
               alt="Pollería el Sabrosito"
               width={58}
               height={58}
-              className="rounded-full object-cover shadow-sm ring-2 ring-white"
+              className="rounded-full object-cover"
               priority
             />
 
@@ -121,7 +121,7 @@ export function Navbar() {
                 className="hidden text-xs sm:block"
                 style={{ color: 'var(--text-soft)' }}
               >
-                Sabor peruano, fácil y rápido
+                Sabor peruano directo a tu mesa
               </p>
             </div>
           </Link>
@@ -160,7 +160,7 @@ export function Navbar() {
             {user?.role === 'WORKER' ? (
               <NavItem
                 href="/worker/pedidos"
-                label="Trabajador"
+                label="Worker"
                 active={pathname.startsWith('/worker')}
               />
             ) : null}
@@ -199,8 +199,8 @@ export function Navbar() {
 
                 <Link
                   href="/carrito"
-                  className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:opacity-95"
-                  style={{ background: 'linear-gradient(135deg, var(--primary), #de7b43)' }}
+                  className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                  style={{ background: 'var(--primary)' }}
                 >
                   <CartIcon />
                   <span>Carrito</span>
@@ -288,7 +288,7 @@ export function Navbar() {
               {user?.role === 'WORKER' ? (
                 <NavItem
                   href="/worker/pedidos"
-                  label="Trabajador"
+                  label="Worker"
                   active={pathname.startsWith('/worker')}
                   onClick={closeMobileMenu}
                 />

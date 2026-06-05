@@ -1,7 +1,6 @@
 'use client';
 
 import { OrderDetail } from '@/components/orders/order-detail';
-import { EmptyState } from '@/components/shared/empty-state';
 import { useOrderById } from '@/features/orders/hooks/use-order-by-id';
 import { useAuth } from '@/hooks/use-auth';
 import { useRealtimeOrderDetail } from '@/hooks/use-realtime-order-detail';
@@ -15,12 +14,16 @@ export default function MyOrderDetailPage() {
   useRealtimeOrderDetail(params.id);
 
   if (isLoading) {
-    return <div className="loading-panel">Cargando detalle del pedido...</div>;
+    return <div className="mx-auto max-w-7xl px-4 py-8">Cargando detalle...</div>;
   }
 
   if (error || !data) {
-    return <EmptyState title="No se pudo cargar el pedido" description="Intenta nuevamente o revisa tu conexión." />;
+    return <div className="mx-auto max-w-7xl px-4 py-8">No se pudo cargar el pedido.</div>;
   }
 
-  return <OrderDetail data={data} />;
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <OrderDetail data={data} />
+    </div>
+  );
 }
