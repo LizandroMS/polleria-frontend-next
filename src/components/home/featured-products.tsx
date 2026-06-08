@@ -24,7 +24,7 @@ export function FeaturedProducts() {
         <h2 className="section-title mt-2">Nuestros favoritos</h2>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
         {featured.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

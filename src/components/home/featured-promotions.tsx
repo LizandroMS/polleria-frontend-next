@@ -48,7 +48,7 @@ export function FeaturedPromotions() {
               <img
                 src={promotion.image_url || fallbackPromotionImage}
                 alt={promotion.title}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                className="h-full w-full object-cover"
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
